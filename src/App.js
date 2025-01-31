@@ -74,7 +74,7 @@ function init() {
     // video.playsInline = true;
     // video.style.display = 'none';
 
-    const video = document.getElementById( 'video' );
+    video = document.getElementById( 'video' );
 
     const texture = new THREE.VideoTexture( video );
     texture.colorSpace = THREE.SRGBColorSpace;
