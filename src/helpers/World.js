@@ -11,6 +11,8 @@ import HandRaySystem from '../systems/HandRaySystem.js';
 import RotatingSystem from '../systems/RotatingSystem.js';
 import InstructionSystem from '../systems/InstructionSystem.js';
 import CalibrationSystem from '../systems/CalibrationSystem.js';
+import Draggable from '../components/Draggable.js';
+import DraggableSystem from '../systems/DraggableSystem.js';
 
 export function setupWorld(renderer, camera, controllerGrips, handPointers) {
     const world = new World();
@@ -22,6 +24,7 @@ export function setupWorld(renderer, camera, controllerGrips, handPointers) {
         .registerComponent(Rotating)
         .registerComponent(HandsInstructionText)
         .registerComponent(OffsetFromCamera)
+        .registerComponent(Draggable)
         .registerComponent(NeedCalibration);
 
     world
@@ -29,6 +32,7 @@ export function setupWorld(renderer, camera, controllerGrips, handPointers) {
         .registerSystem(InstructionSystem, { controllerGrips: controllerGrips })
         .registerSystem(CalibrationSystem, { renderer, camera })
         .registerSystem(ButtonSystem)
+        .registerSystem(DraggableSystem)
         .registerSystem(HandRaySystem, { handPointers: handPointers });
 
     return world;

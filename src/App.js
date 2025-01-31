@@ -9,6 +9,7 @@ import * as Controllers from './helpers/Controllers.js';
 import * as UI from './helpers/UI.js';
 import * as Scene from './helpers/Scene.js';
 import { setupWorld } from './helpers/World.js';
+import Draggable from './components/Draggable.js';
 
 const clock = new THREE.Clock();
 let world, camera, scene, video, renderer;
@@ -50,7 +51,6 @@ function init() {
 
     // Scene setup
     ({scene, video} = Scene.createScene());
-    // scene = Scene.createScene();
 
     // Camera setup
     camera = new THREE.PerspectiveCamera(70, window.innerWidth / window.innerHeight, 0.1, 2000);
@@ -103,10 +103,8 @@ function init() {
     menuEntity.addComponent(Intersectable);
     menuEntity.addComponent(OffsetFromCamera, { x: 0.4, y: 0, z: -1 });
     menuEntity.addComponent(NeedCalibration);
+    menuEntity.addComponent(Draggable);
     menuEntity.addComponent(Object3D, { object: menuMesh });
-
-    // Instruction text entity
-    // UI.createInstructionText(world, scene, 'This is a WebXR Hands demo, please explore with hands.', [0, 1.6, -0.6]);
 
     // Handle window resize
     window.addEventListener('resize', onWindowResize);
