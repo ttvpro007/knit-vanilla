@@ -26,362 +26,362 @@
 
 		import { World, System, Component, TagComponent, Types } from 'three/addons/libs/ecsy.module.js';
 
-    // import Object3D from './src/components/Object3D.js';
-    // import Draggable from './src/components/Draggable.js';
-    // import OffsetFromCamera from './src/components/OffsetFromCamera.js';
-    // import { Button } from './src/components/Button.js';
-    // import Intersectable from './src/tagcomponents/Intersectable.js';
-    // import NeedCalibration from './src/tagcomponents/NeedCalibration.js';
-    // import Randomizable from './src/tagcomponents/Randomizable.js';
-    // import ButtonSystem from './src/systems/ButtonSystem.js';
-    // import DraggableSystem from './src/systems/DraggableSystem.js';
-    // import HandRaySystem from './src/systems/HandRaySystem.js';
-    // import InstructionSystem from './src/systems/InstructionSystem.js';
-    // import CalibrationSystem from './src/systems/CalibrationSystem.js';
-    // import RandomizableSystem from './src/systems/RandomizableSystem.js';
+    import Object3D from './src/components/Object3D.js';
+    import Draggable from './src/components/Draggable.js';
+    import OffsetFromCamera from './src/components/OffsetFromCamera.js';
+    import { Button } from './src/components/Button.js';
+    import Intersectable from './src/tagcomponents/Intersectable.js';
+    import NeedCalibration from './src/tagcomponents/NeedCalibration.js';
+    import Randomizable from './src/tagcomponents/Randomizable.js';
+    import ButtonSystem from './src/systems/ButtonSystem.js';
+    import DraggableSystem from './src/systems/DraggableSystem.js';
+    import HandRaySystem from './src/systems/HandRaySystem.js';
+    import InstructionSystem from './src/systems/InstructionSystem.js';
+    import CalibrationSystem from './src/systems/CalibrationSystem.js';
+    import RandomizerSystem from './src/systems/RandomizerSystem.js';
 
     // import * as UI from './src/helpers/UI.js';
     // import * as Controllers from './src/helpers/Controllers.js';
 
-    class Object3D extends Component { }
+    // class Object3D extends Component { }
 
-		Object3D.schema = {
-			object: { type: Types.Ref }
-		};
+		// Object3D.schema = {
+		// 	object: { type: Types.Ref }
+		// };
 
-		class Button extends Component { }
+		// class Button extends Component { }
 
-		Button.schema = {
-			// button states: [none, hovered, pressed]
-			currState: { type: Types.String, default: 'none' },
-			prevState: { type: Types.String, default: 'none' },
-			action: { type: Types.Ref, default: () => { } }
-		};
+		// Button.schema = {
+		// 	// button states: [none, hovered, pressed]
+		// 	currState: { type: Types.String, default: 'none' },
+		// 	prevState: { type: Types.String, default: 'none' },
+		// 	action: { type: Types.Ref, default: () => { } }
+		// };
 
-		class ButtonSystem extends System {
+		// class ButtonSystem extends System {
 
-			execute( /*delta, time*/ ) {
+		// 	execute( /*delta, time*/ ) {
 
-				this.queries.buttons.results.forEach( entity => {
+		// 		this.queries.buttons.results.forEach( entity => {
 
-					const button = entity.getMutableComponent( Button );
-					const buttonMesh = entity.getComponent( Object3D ).object;
-					if ( button.currState == 'none' ) {
+		// 			const button = entity.getMutableComponent( Button );
+		// 			const buttonMesh = entity.getComponent( Object3D ).object;
+		// 			if ( button.currState == 'none' ) {
 
-						buttonMesh.scale.set( 1, 1, 1 );
+		// 				buttonMesh.scale.set( 1, 1, 1 );
 
-					} else {
+		// 			} else {
 
-						buttonMesh.scale.set( 1.1, 1.1, 1.1 );
+		// 				buttonMesh.scale.set( 1.1, 1.1, 1.1 );
 
-					}
+		// 			}
 
-					if ( button.currState == 'pressed' && button.prevState != 'pressed' ) {
+		// 			if ( button.currState == 'pressed' && button.prevState != 'pressed' ) {
 
-						button.action();
+		// 				button.action();
 
-					}
+		// 			}
 
-					// preserve prevState, clear currState
-					// HandRaySystem will update currState
-					button.prevState = button.currState;
-					button.currState = 'none';
+		// 			// preserve prevState, clear currState
+		// 			// HandRaySystem will update currState
+		// 			button.prevState = button.currState;
+		// 			button.currState = 'none';
 
-				} );
+		// 		} );
 
-			}
+		// 	}
 
-		}
+		// }
 
-		ButtonSystem.queries = {
-			buttons: {
-				components: [ Button ]
-			}
-		};
+		// ButtonSystem.queries = {
+		// 	buttons: {
+		// 		components: [ Button ]
+		// 	}
+		// };
 
-		class Draggable extends Component { }
+		// class Draggable extends Component { }
 
-		Draggable.schema = {
-			// draggable states: [detached, hovered, to-be-attached, attached, to-be-detached]
-			state: { type: Types.String, default: 'none' },
-			originalParent: { type: Types.Ref, default: null },
-			attachedPointer: { type: Types.Ref, default: null }
-		};
+		// Draggable.schema = {
+		// 	// draggable states: [detached, hovered, to-be-attached, attached, to-be-detached]
+		// 	state: { type: Types.String, default: 'none' },
+		// 	originalParent: { type: Types.Ref, default: null },
+		// 	attachedPointer: { type: Types.Ref, default: null }
+		// };
 
-		class DraggableSystem extends System {
+		// class DraggableSystem extends System {
 
-			execute( /*delta, time*/ ) {
+		// 	execute( /*delta, time*/ ) {
 
-				this.queries.draggable.results.forEach( entity => {
+		// 		this.queries.draggable.results.forEach( entity => {
 
-					const draggable = entity.getMutableComponent( Draggable );
-					const object = entity.getComponent( Object3D ).object;
-					if ( draggable.originalParent == null ) {
+		// 			const draggable = entity.getMutableComponent( Draggable );
+		// 			const object = entity.getComponent( Object3D ).object;
+		// 			if ( draggable.originalParent == null ) {
 
-						draggable.originalParent = object.parent;
+		// 				draggable.originalParent = object.parent;
 
-					}
+		// 			}
 
-					switch ( draggable.state ) {
+		// 			switch ( draggable.state ) {
 
-						case 'to-be-attached':
-							draggable.attachedPointer.children[ 0 ].attach( object );
-							draggable.state = 'attached';
-							break;
-						case 'to-be-detached':
-							draggable.originalParent.attach( object );
-							draggable.state = 'detached';
-							break;
-						default:
-							object.scale.set( 1, 1, 1 );
+		// 				case 'to-be-attached':
+		// 					draggable.attachedPointer.children[ 0 ].attach( object );
+		// 					draggable.state = 'attached';
+		// 					break;
+		// 				case 'to-be-detached':
+		// 					draggable.originalParent.attach( object );
+		// 					draggable.state = 'detached';
+		// 					break;
+		// 				default:
+		// 					object.scale.set( 1, 1, 1 );
 
-					}
+		// 			}
 
-				} );
+		// 		} );
 
-			}
+		// 	}
 
-		}
+		// }
 
-		DraggableSystem.queries = {
-			draggable: {
-				components: [ Draggable ]
-			}
-		};
+		// DraggableSystem.queries = {
+		// 	draggable: {
+		// 		components: [ Draggable ]
+		// 	}
+		// };
 
-		class Intersectable extends TagComponent { }
+		// class Intersectable extends TagComponent { }
 
-		class HandRaySystem extends System {
+		// class HandRaySystem extends System {
 
-			init( attributes ) {
+		// 	init( attributes ) {
 
-				this.handPointers = attributes.handPointers;
+		// 		this.handPointers = attributes.handPointers;
 
-			}
+		// 	}
 
-			execute( /*delta, time*/ ) {
+		// 	execute( /*delta, time*/ ) {
 
-				this.handPointers.forEach( hp => {
+		// 		this.handPointers.forEach( hp => {
 
-					let distance = null;
-					let intersectingEntity = null;
-					this.queries.intersectable.results.forEach( entity => {
+		// 			let distance = null;
+		// 			let intersectingEntity = null;
+		// 			this.queries.intersectable.results.forEach( entity => {
 
-						const object = entity.getComponent( Object3D ).object;
-						const intersections = hp.intersectObject( object, false );
-						if ( intersections && intersections.length > 0 ) {
+		// 				const object = entity.getComponent( Object3D ).object;
+		// 				const intersections = hp.intersectObject( object, false );
+		// 				if ( intersections && intersections.length > 0 ) {
 
-							if ( distance == null || intersections[ 0 ].distance < distance ) {
+		// 					if ( distance == null || intersections[ 0 ].distance < distance ) {
 
-								distance = intersections[ 0 ].distance;
-								intersectingEntity = entity;
+		// 						distance = intersections[ 0 ].distance;
+		// 						intersectingEntity = entity;
 
-							}
+		// 					}
 
-						}
+		// 				}
 
-					} );
-					if ( distance ) {
+		// 			} );
+		// 			if ( distance ) {
 
-						hp.setCursor( distance );
-						if ( intersectingEntity.hasComponent( Button ) ) {
+		// 				hp.setCursor( distance );
+		// 				if ( intersectingEntity.hasComponent( Button ) ) {
 
-							const button = intersectingEntity.getMutableComponent( Button );
-							if ( hp.isPinched() ) {
+		// 					const button = intersectingEntity.getMutableComponent( Button );
+		// 					if ( hp.isPinched() ) {
 
-								button.currState = 'pressed';
+		// 						button.currState = 'pressed';
 
-							} else if ( button.currState != 'pressed' ) {
+		// 					} else if ( button.currState != 'pressed' ) {
 
-								button.currState = 'hovered';
+		// 						button.currState = 'hovered';
 
-							}
+		// 					}
 
-						}
+		// 				}
 
-						if ( intersectingEntity.hasComponent( Draggable ) ) {
+		// 				if ( intersectingEntity.hasComponent( Draggable ) ) {
 
-							const draggable = intersectingEntity.getMutableComponent( Draggable );
-							const object = intersectingEntity.getComponent( Object3D ).object;
-							object.scale.set( 1.1, 1.1, 1.1 );
-							if ( hp.isPinched() ) {
+		// 					const draggable = intersectingEntity.getMutableComponent( Draggable );
+		// 					const object = intersectingEntity.getComponent( Object3D ).object;
+		// 					object.scale.set( 1.1, 1.1, 1.1 );
+		// 					if ( hp.isPinched() ) {
 
-								if ( ! hp.isAttached() && draggable.state != 'attached' ) {
+		// 						if ( ! hp.isAttached() && draggable.state != 'attached' ) {
 
-									draggable.state = 'to-be-attached';
-									draggable.attachedPointer = hp;
-									hp.setAttached( true );
+		// 							draggable.state = 'to-be-attached';
+		// 							draggable.attachedPointer = hp;
+		// 							hp.setAttached( true );
 
-								}
+		// 						}
 
-							} else {
+		// 					} else {
 
-								if ( hp.isAttached() && draggable.state == 'attached' ) {
+		// 						if ( hp.isAttached() && draggable.state == 'attached' ) {
 
-									console.log( 'hello' );
-									draggable.state = 'to-be-detached';
-									draggable.attachedPointer = null;
-									hp.setAttached( false );
+		// 							console.log( 'hello' );
+		// 							draggable.state = 'to-be-detached';
+		// 							draggable.attachedPointer = null;
+		// 							hp.setAttached( false );
 
-								}
+		// 						}
 
-							}
+		// 					}
 
-						}
+		// 				}
 
-					} else {
+		// 			} else {
 
-						hp.setCursor( 1.5 );
+		// 				hp.setCursor( 1.5 );
 
-					}
+		// 			}
 
-				} );
+		// 		} );
 
-			}
+		// 	}
 
-		}
+		// }
 
-		HandRaySystem.queries = {
-			intersectable: {
-				components: [ Intersectable ]
-			}
-		};
+		// HandRaySystem.queries = {
+		// 	intersectable: {
+		// 		components: [ Intersectable ]
+		// 	}
+		// };
 
-		class HandsInstructionText extends TagComponent { }
+		// class HandsInstructionText extends TagComponent { }
 
-		class InstructionSystem extends System {
+		// class InstructionSystem extends System {
 
-			init( attributes ) {
+		// 	init( attributes ) {
 
-				this.controllers = attributes.controllers;
+		// 		this.controllers = attributes.controllers;
 
-			}
+		// 	}
 
-			execute( /*delta, time*/ ) {
+		// 	execute( /*delta, time*/ ) {
 
-				let visible = false;
-				this.controllers.forEach( controller => {
+		// 		let visible = false;
+		// 		this.controllers.forEach( controller => {
 
-					if ( controller.visible ) {
+		// 			if ( controller.visible ) {
 
-						visible = true;
+		// 				visible = true;
 
-					}
+		// 			}
 
-				} );
+		// 		} );
 
-				this.queries.instructionTexts.results.forEach( entity => {
+		// 		this.queries.instructionTexts.results.forEach( entity => {
 
-					const object = entity.getComponent( Object3D ).object;
-					object.visible = visible;
+		// 			const object = entity.getComponent( Object3D ).object;
+		// 			object.visible = visible;
 
-				} );
+		// 		} );
 
-			}
+		// 	}
 
-		}
+		// }
 
-		InstructionSystem.queries = {
-			instructionTexts: {
-				components: [ HandsInstructionText ]
-			}
-		};
+		// InstructionSystem.queries = {
+		// 	instructionTexts: {
+		// 		components: [ HandsInstructionText ]
+		// 	}
+		// };
 
-		class OffsetFromCamera extends Component { }
+		// class OffsetFromCamera extends Component { }
 
-		OffsetFromCamera.schema = {
-			x: { type: Types.Number, default: 0 },
-			y: { type: Types.Number, default: 0 },
-			z: { type: Types.Number, default: 0 },
-		};
+		// OffsetFromCamera.schema = {
+		// 	x: { type: Types.Number, default: 0 },
+		// 	y: { type: Types.Number, default: 0 },
+		// 	z: { type: Types.Number, default: 0 },
+		// };
 
-		class NeedCalibration extends TagComponent { }
+		// class NeedCalibration extends TagComponent { }
 
-		class CalibrationSystem extends System {
+		// class CalibrationSystem extends System {
 
-			init( attributes ) {
+		// 	init( attributes ) {
 
-				this.camera = attributes.camera;
-				this.renderer = attributes.renderer;
+		// 		this.camera = attributes.camera;
+		// 		this.renderer = attributes.renderer;
 
-	    }
+	  //   }
 
-			execute( /*delta, time*/ ) {
+		// 	execute( /*delta, time*/ ) {
 
-				this.queries.needCalibration.results.forEach( entity => {
+		// 		this.queries.needCalibration.results.forEach( entity => {
 
-					if ( this.renderer.xr.getSession() ) {
+		// 			if ( this.renderer.xr.getSession() ) {
 
-						const offset = entity.getComponent( OffsetFromCamera );
-						const object = entity.getComponent( Object3D ).object;
-						const xrCamera = this.renderer.xr.getCamera();
-						object.position.x = xrCamera.position.x + offset.x;
-						object.position.y = xrCamera.position.y + offset.y;
-						object.position.z = xrCamera.position.z + offset.z;
-						entity.removeComponent( NeedCalibration );
+		// 				const offset = entity.getComponent( OffsetFromCamera );
+		// 				const object = entity.getComponent( Object3D ).object;
+		// 				const xrCamera = this.renderer.xr.getCamera();
+		// 				object.position.x = xrCamera.position.x + offset.x;
+		// 				object.position.y = xrCamera.position.y + offset.y;
+		// 				object.position.z = xrCamera.position.z + offset.z;
+		// 				entity.removeComponent( NeedCalibration );
 
-					}
+		// 			}
 
-				} );
+		// 		} );
 
-			}
+		// 	}
 
-		}
+		// }
 
-		CalibrationSystem.queries = {
-			needCalibration: {
-				components: [ NeedCalibration ]
-			}
-		};
+		// CalibrationSystem.queries = {
+		// 	needCalibration: {
+		// 		components: [ NeedCalibration ]
+		// 	}
+		// };
 
-		class Randomizable extends TagComponent { }
+		// class Randomizable extends TagComponent { }
 
-		class RandomizerSystem extends System {
+		// class RandomizerSystem extends System {
 
-			init( /*attributes*/ ) {
+		// 	init( /*attributes*/ ) {
 
-				this.needRandomizing = true;
+		// 		this.needRandomizing = true;
 
-			}
+		// 	}
 
-			execute( /*delta, time*/ ) {
+		// 	execute( /*delta, time*/ ) {
 
-				if ( ! this.needRandomizing ) {
+		// 		if ( ! this.needRandomizing ) {
 
-					return;
+		// 			return;
 
-				}
+		// 		}
 
-				this.queries.randomizable.results.forEach( entity => {
+		// 		this.queries.randomizable.results.forEach( entity => {
 
-					const object = entity.getComponent( Object3D ).object;
+		// 			const object = entity.getComponent( Object3D ).object;
 
-					object.material.color.setHex( Math.random() * 0xffffff );
+		// 			object.material.color.setHex( Math.random() * 0xffffff );
 
-					object.position.x = Math.random() * 2 - 1;
-					object.position.y = Math.random() * 2;
-					object.position.z = Math.random() * 2 - 1;
+		// 			object.position.x = Math.random() * 2 - 1;
+		// 			object.position.y = Math.random() * 2;
+		// 			object.position.z = Math.random() * 2 - 1;
 
-					object.rotation.x = Math.random() * 2 * Math.PI;
-					object.rotation.y = Math.random() * 2 * Math.PI;
-					object.rotation.z = Math.random() * 2 * Math.PI;
+		// 			object.rotation.x = Math.random() * 2 * Math.PI;
+		// 			object.rotation.y = Math.random() * 2 * Math.PI;
+		// 			object.rotation.z = Math.random() * 2 * Math.PI;
 
-					object.scale.x = Math.random() + 0.5;
-					object.scale.y = Math.random() + 0.5;
-					object.scale.z = Math.random() + 0.5;
-					this.needRandomizing = false;
+		// 			object.scale.x = Math.random() + 0.5;
+		// 			object.scale.y = Math.random() + 0.5;
+		// 			object.scale.z = Math.random() + 0.5;
+		// 			this.needRandomizing = false;
 
-				} );
+		// 		} );
 
-			}
+		// 	}
 
-		}
+		// }
 
-		RandomizerSystem.queries = {
-			randomizable: {
-				components: [ Randomizable ]
-			}
-		};
+		// RandomizerSystem.queries = {
+		// 	randomizable: {
+		// 		components: [ Randomizable ]
+		// 	}
+		// };
 
 		const world = new World();
 		const clock = new THREE.Clock();
