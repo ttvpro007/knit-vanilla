@@ -54,6 +54,15 @@ function playPauseToggle()
     }
 }
 
+function exitSession()
+{
+    // exitText.visible = true;
+    setTimeout(() => {
+        // exitText.visible = false;
+        renderer.xr.getSession().end();
+    }, 2000);
+}
+
 function onWindowResize() {
     camera.aspect = window.innerWidth / window.innerHeight;
     camera.updateProjectionMatrix();
@@ -173,20 +182,21 @@ function init() {
     // UI.createFloor(scene);
     const menuMesh = UI.createMenu(scene);
     // const torusKnot = Scene.createTorusKnot(world, scene);
-    const exitText = UI.createInstructionText(world, scene, 'Exiting session...', [0, 1.5, -0.6], false);
+    // const exitText = UI.createInstructionText(world, scene, 'Exiting session...', [0, 1.5, -0.6], false);
 
     // Create menu buttons
-    UI.createButton(world, menuMesh, 'play', 0xffd3b5, 0.18, () => playPauseToggle()); // Orange
+    UI.createButton(world, menuMesh, 'play', 0xffd3b5, 0.18, () => playPauseToggle());
+    UI.createButton(world, menuMesh, 'exit', 0xffd3b5, 0.06, () => exitSession());
     // UI.createButton(world, menuMesh, null, 0xffd3b5, 0.18, () => torusKnot.material.color.setHex(0xffd3b5)); // Orange
     // UI.createButton(world, menuMesh, null, 0xe84a5f, 0.06, () => torusKnot.material.color.setHex(0xe84a5f)); // Pink
     // UI.createButton(world, menuMesh, 'reset', 0x355c7d, -0.06, () => torusKnot.material.color.setHex(0xffffff)); // Reset
-    UI.createButton(world, menuMesh, 'exit', 0xff0000, -0.18, function () {
-        exitText.visible = true;
-        setTimeout(() => {
-            exitText.visible = false;
-            renderer.xr.getSession().end();
-        }, 2000);
-    });
+    // UI.createButton(world, menuMesh, 'exit', 0xff0000, -0.18, function () {
+    //     exitText.visible = true;
+    //     setTimeout(() => {
+    //         exitText.visible = false;
+    //         renderer.xr.getSession().end();
+    //     }, 2000);
+    // });
 
 
     // Menu entity
