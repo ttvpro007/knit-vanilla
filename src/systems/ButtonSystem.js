@@ -2,7 +2,7 @@ import { System } from 'three/addons/libs/ecsy.module.js';
 import { Button } from '../components/Button.js'
 import Object3D from '../components/Object3D.js'
 
-class ButtonSystem extends System {
+export default class ButtonSystem extends System {
 
     execute( /* delta, time */ ) {
 
@@ -42,5 +42,3 @@ ButtonSystem.queries = {
         components: [ Button ]
     }
 };
-
-export default ButtonSystem;

@@ -6,14 +6,14 @@ class InstructionSystem extends System {
 
     init( attributes ) {
 
-        this.controllerGrips = attributes.controllerGrips;
+        this.controllers = attributes.controllers;
 
     }
 
-    execute( /* delta, time */ ) {
+    execute( /*delta, time*/ ) {
 
         let visible = false;
-        this.controllerGrips.forEach( controller => {
+        this.controllers.forEach( controller => {
 
             if ( controller.visible ) {
 
