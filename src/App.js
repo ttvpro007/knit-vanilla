@@ -12,55 +12,20 @@ import { setupWorld } from './helpers/World.js';
 
 const clock = new THREE.Clock();
 let world, camera, scene, video, renderer;
-
-// button.addEventListener('click', onButtonClick);
-
-function onButtonClick() {
-    // This will allow us to play video later...
-    video.load();
-    fetchVideoAndPlay();
-}
-
-function fetchVideoAndPlay() {
-    fetch('texture/MaryOculus.mp4')
-    .then(response => response.blob())
-    .then(blob => {
-        video.srcObject = blob;
-        return video.play();
-    })
-    .then(_ => {
-        // Video playback started ;)
-    })
-    .catch(e => {
-        // Video playback failed ;(
-    })
-}
-
-function playPauseToggle()
-{
-    var playPromise = video.play();
- 
-    if (playPromise !== undefined) {
-        playPromise.then(_ => {
-            // Automatic playback started!
-            // Show playing UI.
-            // We can now safely pause video...
-            video.pause();
-        })
-        .catch(error => {
-            // Auto-play was prevented
-            // Show paused UI.
-        });
+  
+function playPauseToggle() {
+    if (video.paused) {
+        video.play();
+    } else {
+        video.pause();
     }
 }
 
 function exitSession()
 {
-    // exitText.visible = true;
     setTimeout(() => {
-        // exitText.visible = false;
         renderer.xr.getSession().end();
-    }, 2000);
+    }, 200);
 }
 
 function onWindowResize() {
@@ -124,30 +89,14 @@ function init() {
     world = setupWorld(renderer, camera, [controllerGrip1, controllerGrip2], [handPointer1, handPointer2]);
 
     // Scene Setup
-    // UI.createFloor(scene);
-    const menuMesh = UI.createMenu(scene);
-    // const torusKnot = Scene.createTorusKnot(world, scene);
-    // const exitText = UI.createInstructionText(world, scene, 'Exiting session...', [0, 1.5, -0.6], false);
+    const menuMesh = UI.createMenu(scene, 0, 0, -2);
 
-    const v = document.getElementById( 'video' );
-    const b = document.getElementById( 'button' );
-    b.addEventListener('click', () => v.play());
+    const testButton = document.getElementById( 'testButton' );
+    testButton.addEventListener('click', playPauseToggle);
 
     // Create menu buttons
-    // UI.createButton(world, menuMesh, 'play', 0xffd3b5, 0.18, () => playPauseToggle());
-    UI.createButton(world, menuMesh, 'play', 0xffd3b5, 0.18, () => v.play());
-    UI.createButton(world, menuMesh, 'exit', 0xffd3b5, 0.06, () => exitSession());
-    // UI.createButton(world, menuMesh, null, 0xffd3b5, 0.18, () => torusKnot.material.color.setHex(0xffd3b5)); // Orange
-    // UI.createButton(world, menuMesh, null, 0xe84a5f, 0.06, () => torusKnot.material.color.setHex(0xe84a5f)); // Pink
-    // UI.createButton(world, menuMesh, 'reset', 0x355c7d, -0.06, () => torusKnot.material.color.setHex(0xffffff)); // Reset
-    // UI.createButton(world, menuMesh, 'exit', 0xff0000, -0.18, function () {
-    //     exitText.visible = true;
-    //     setTimeout(() => {
-    //         exitText.visible = false;
-    //         renderer.xr.getSession().end();
-    //     }, 2000);
-    // });
-
+    UI.createButton(world, menuMesh, 'play/pause', 0xffd3b5, -0.2, 0, 0.01, playPauseToggle);
+    UI.createButton(world, menuMesh, 'exit', 0xffd3b5, 0.2, 0, 0.01, exitSession);
 
     // Menu entity
     const menuEntity = world.createEntity();

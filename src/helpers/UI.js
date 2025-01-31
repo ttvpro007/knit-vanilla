@@ -13,25 +13,25 @@ export function createFloor(scene) {
     scene.add(floor);
 }
 
-export function createMenu(scene) {
-    const menuGeometry = new THREE.PlaneGeometry(0.24, 0.5);
-    const menuMaterial = new THREE.MeshPhongMaterial({ opacity: 0, transparent: true });
+export function createMenu(scene, positionX=0, positionY=0, positionZ=0) {
+    const menuGeometry = new THREE.PlaneGeometry(1, 0.25);
+    const menuMaterial = new THREE.MeshPhongMaterial({ opacity: 0, shininess: 0.5, transparent: true, opacity: 0.35});
     const menuMesh = new THREE.Mesh(menuGeometry, menuMaterial);
-    menuMesh.position.set(0.4, 1, -1);
-    menuMesh.rotation.y = -Math.PI / 12;
+    menuMesh.position.set(positionX, positionY, positionZ);
+    // menuMesh.rotation.y = -Math.PI / 12;
     scene.add(menuMesh);
     return menuMesh;
 }
 
-export function createButton(world, menu, label, color, position, action) {
-    const button = makeButtonMesh(0.2, 0.1, 0.01, color);
-    button.position.set(0, position, 0);
+export function createButton(world, menu, label, color, positionX=0, positionY=0,positionZ=0, action) {
+    const button = makeButtonMesh(0.35, 0.1, 0.01, color);
+    button.position.set(positionX, positionY, positionZ);
     menu.add(button);
 
     if (label) {
         const buttonText = createText(label, 0.06);
         button.add(buttonText);
-        buttonText.position.set(0, 0, 0.0051);
+        buttonText.position.set(0, 0, 0.01);
     }
 
     const entity = world.createEntity();
