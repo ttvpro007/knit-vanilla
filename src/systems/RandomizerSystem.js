@@ -2,7 +2,7 @@ import { System } from "three/examples/jsm/libs/ecsy.module.js";
 import Randomizable from "../tagcomponents/Randomizable";
 import Object3D from "../components/Object3D";
 
-export default class RandomizableSystem extends System {
+export default class RandomizerSystem extends System {
 
     init( /*attributes*/ ) {
 
@@ -43,7 +43,7 @@ export default class RandomizableSystem extends System {
 
 }
 
-RandomizableSystem.queries = {
+RandomizerSystem.queries = {
     randomizable: {
         components: [ Randomizable ]
     }
