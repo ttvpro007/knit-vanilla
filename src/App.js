@@ -22,7 +22,7 @@ function onButtonClick() {
 }
 
 function fetchVideoAndPlay() {
-    fetch('https://example.com/file.mp4')
+    fetch('/texture/MaryOculus.mp4')
     .then(response => response.blob())
     .then(blob => {
         video.srcObject = blob;
