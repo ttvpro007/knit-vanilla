@@ -19,7 +19,53 @@ export function createScene() {
     light.shadow.mapSize.set(4096, 4096);
     scene.add(light);
 
-    return scene;
+    const video = document.getElementById( 'video' );
+    
+    const texture = new THREE.VideoTexture( video );
+    texture.colorSpace = THREE.SRGBColorSpace;
+
+    // left
+    const geometry1 = new THREE.SphereGeometry( 500, 60, 40 );
+    // invert the geometry on the x-axis so that all of the faces point inward
+    geometry1.scale( - 1, 1, 1 );
+
+    const uvs1 = geometry1.attributes.uv.array;
+
+    for ( let i = 0; i < uvs1.length; i += 2 ) {
+
+        uvs1[ i ] *= 0.5;
+
+    }
+
+    const material1 = new THREE.MeshBasicMaterial( { map: texture } );
+
+    const mesh1 = new THREE.Mesh( geometry1, material1 );
+    mesh1.rotation.y = - Math.PI / 2;
+    mesh1.layers.set( 1 ); // display in left eye only
+    scene.add( mesh1 );
+
+    // right
+
+    const geometry2 = new THREE.SphereGeometry( 500, 60, 40 );
+    geometry2.scale( - 1, 1, 1 );
+
+    const uvs2 = geometry2.attributes.uv.array;
+
+    for ( let i = 0; i < uvs2.length; i += 2 ) {
+
+        uvs2[ i ] *= 0.5;
+        uvs2[ i ] += 0.5;
+
+    }
+
+    const material2 = new THREE.MeshBasicMaterial( { map: texture } );
+
+    const mesh2 = new THREE.Mesh( geometry2, material2 );
+    mesh2.rotation.y = - Math.PI / 2;
+    mesh2.layers.set( 2 ); // display in right eye only
+    scene.add( mesh2 );
+
+    return {scene, video};
 }
 
 export function createTorusKnot(world, scene, color = 0xffffff, shininess = 0.8) {
