@@ -66,13 +66,15 @@ function init() {
     camera.position.set(0, 1.2, 0.3);
 
     // video
-    video = document.createElement('video');
-    video.id = 'video';
-    video.loop = true;
-    video.muted = true;
-    video.crossOrigin = 'anonymous';
-    video.playsInline = true;
-    video.style.display = 'none';
+    // video = document.createElement('video');
+    // video.id = 'video';
+    // video.loop = true;
+    // video.muted = true;
+    // video.crossOrigin = 'anonymous';
+    // video.playsInline = true;
+    // video.style.display = 'none';
+
+    const video = document.getElementById( 'video' );
 
     const texture = new THREE.VideoTexture( video );
     texture.colorSpace = THREE.SRGBColorSpace;
@@ -124,9 +126,10 @@ function init() {
     renderer.setPixelRatio( window.devicePixelRatio );
     renderer.setSize( window.innerWidth, window.innerHeight );
     renderer.setAnimationLoop( animate );
-    renderer.shadowMap.enabled = true;
+    // renderer.shadowMap.enabled = true;
     renderer.xr.enabled = true;
-    renderer.xr.cameraAutoUpdate = false;
+    renderer.xr.setReferenceSpaceType( 'local' );
+    // renderer.xr.cameraAutoUpdate = false;
 
     container.appendChild( renderer.domElement );
 
@@ -149,16 +152,16 @@ function init() {
     world = setupWorld(renderer, camera, [controllerGrip1, controllerGrip2], [handPointer1, handPointer2]);
 
     // Scene Setup
-    UI.createFloor(scene);
+    // UI.createFloor(scene);
     const menuMesh = UI.createMenu(scene);
-    const torusKnot = Scene.createTorusKnot(world, scene);
+    // const torusKnot = Scene.createTorusKnot(world, scene);
     const exitText = UI.createInstructionText(world, scene, 'Exiting session...', [0, 1.5, -0.6], false);
 
     // Create menu buttons
     UI.createButton(world, menuMesh, 'play', 0xffd3b5, 0.18, () => onButtonClick); // Orange
     // UI.createButton(world, menuMesh, null, 0xffd3b5, 0.18, () => torusKnot.material.color.setHex(0xffd3b5)); // Orange
-    UI.createButton(world, menuMesh, null, 0xe84a5f, 0.06, () => torusKnot.material.color.setHex(0xe84a5f)); // Pink
-    UI.createButton(world, menuMesh, 'reset', 0x355c7d, -0.06, () => torusKnot.material.color.setHex(0xffffff)); // Reset
+    // UI.createButton(world, menuMesh, null, 0xe84a5f, 0.06, () => torusKnot.material.color.setHex(0xe84a5f)); // Pink
+    // UI.createButton(world, menuMesh, 'reset', 0x355c7d, -0.06, () => torusKnot.material.color.setHex(0xffffff)); // Reset
     UI.createButton(world, menuMesh, 'exit', 0xff0000, -0.18, function () {
         exitText.visible = true;
         setTimeout(() => {

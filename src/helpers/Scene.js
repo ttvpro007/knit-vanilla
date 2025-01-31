@@ -4,7 +4,7 @@ import Rotating from '../tagcomponents/Rotating.js';
 
 export function createScene() {
     const scene = new THREE.Scene();
-    scene.background = new THREE.Color(0x444444);
+    scene.background = new THREE.Color( 0x101010 );
 
     // Lighting
     scene.add(new THREE.HemisphereLight(0xcccccc, 0x999999, 3));
