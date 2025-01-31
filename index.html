@@ -24,7 +24,8 @@
 		import { OculusHandPointerModel } from 'three/addons/webxr/OculusHandPointerModel.js';
 		import { createText } from 'three/addons/webxr/Text2D.js';
 
-		import { World, System, Component, TagComponent, Types } from 'three/addons/libs/ecsy.module.js';
+		// import { World, System, Component, TagComponent, Types } from 'three/addons/libs/ecsy.module.js';
+		import { World } from 'three/addons/libs/ecsy.module.js';
 
     import Object3D from './src/components/Object3D.js';
     import Draggable from './src/components/Draggable.js';
@@ -35,7 +36,7 @@
     import Randomizable from './src/tagcomponents/Randomizable.js';
     import ButtonSystem from './src/systems/ButtonSystem.js';
     import DraggableSystem from './src/systems/DraggableSystem.js';
-    // import HandRaySystem from './src/systems/HandRaySystem.js';
+    import HandRaySystem from './src/systems/HandRaySystem.js';
     import InstructionSystem from './src/systems/InstructionSystem.js';
     import CalibrationSystem from './src/systems/CalibrationSystem.js';
     import RandomizerSystem from './src/systems/RandomizerSystem.js';
@@ -151,101 +152,101 @@
 
 		// class Intersectable extends TagComponent { }
 
-		class HandRaySystem extends System {
+		// class HandRaySystem extends System {
 
-			init( attributes ) {
+		// 	init( attributes ) {
 
-				this.handPointers = attributes.handPointers;
+		// 		this.handPointers = attributes.handPointers;
 
-			}
+		// 	}
 
-			execute( /*delta, time*/ ) {
+		// 	execute( /*delta, time*/ ) {
 
-				this.handPointers.forEach( hp => {
+		// 		this.handPointers.forEach( hp => {
 
-					let distance = null;
-					let intersectingEntity = null;
-					this.queries.intersectable.results.forEach( entity => {
+		// 			let distance = null;
+		// 			let intersectingEntity = null;
+		// 			this.queries.intersectable.results.forEach( entity => {
 
-						const object = entity.getComponent( Object3D ).object;
-						const intersections = hp.intersectObject( object, false );
-						if ( intersections && intersections.length > 0 ) {
+		// 				const object = entity.getComponent( Object3D ).object;
+		// 				const intersections = hp.intersectObject( object, false );
+		// 				if ( intersections && intersections.length > 0 ) {
 
-							if ( distance == null || intersections[ 0 ].distance < distance ) {
+		// 					if ( distance == null || intersections[ 0 ].distance < distance ) {
 
-								distance = intersections[ 0 ].distance;
-								intersectingEntity = entity;
+		// 						distance = intersections[ 0 ].distance;
+		// 						intersectingEntity = entity;
 
-							}
+		// 					}
 
-						}
+		// 				}
 
-					} );
-					if ( distance ) {
+		// 			} );
+		// 			if ( distance ) {
 
-						hp.setCursor( distance );
-						if ( intersectingEntity.hasComponent( Button ) ) {
+		// 				hp.setCursor( distance );
+		// 				if ( intersectingEntity.hasComponent( Button ) ) {
 
-							const button = intersectingEntity.getMutableComponent( Button );
-							if ( hp.isPinched() ) {
+		// 					const button = intersectingEntity.getMutableComponent( Button );
+		// 					if ( hp.isPinched() ) {
 
-								button.currState = 'pressed';
+		// 						button.currState = 'pressed';
 
-							} else if ( button.currState != 'pressed' ) {
+		// 					} else if ( button.currState != 'pressed' ) {
 
-								button.currState = 'hovered';
+		// 						button.currState = 'hovered';
 
-							}
+		// 					}
 
-						}
+		// 				}
 
-						if ( intersectingEntity.hasComponent( Draggable ) ) {
+		// 				if ( intersectingEntity.hasComponent( Draggable ) ) {
 
-							const draggable = intersectingEntity.getMutableComponent( Draggable );
-							const object = intersectingEntity.getComponent( Object3D ).object;
-							object.scale.set( 1.1, 1.1, 1.1 );
-							if ( hp.isPinched() ) {
+		// 					const draggable = intersectingEntity.getMutableComponent( Draggable );
+		// 					const object = intersectingEntity.getComponent( Object3D ).object;
+		// 					object.scale.set( 1.1, 1.1, 1.1 );
+		// 					if ( hp.isPinched() ) {
 
-								if ( ! hp.isAttached() && draggable.state != 'attached' ) {
+		// 						if ( ! hp.isAttached() && draggable.state != 'attached' ) {
 
-									draggable.state = 'to-be-attached';
-									draggable.attachedPointer = hp;
-									hp.setAttached( true );
+		// 							draggable.state = 'to-be-attached';
+		// 							draggable.attachedPointer = hp;
+		// 							hp.setAttached( true );
 
-								}
+		// 						}
 
-							} else {
+		// 					} else {
 
-								if ( hp.isAttached() && draggable.state == 'attached' ) {
+		// 						if ( hp.isAttached() && draggable.state == 'attached' ) {
 
-									console.log( 'hello' );
-									draggable.state = 'to-be-detached';
-									draggable.attachedPointer = null;
-									hp.setAttached( false );
+		// 							console.log( 'hello' );
+		// 							draggable.state = 'to-be-detached';
+		// 							draggable.attachedPointer = null;
+		// 							hp.setAttached( false );
 
-								}
+		// 						}
 
-							}
+		// 					}
 
-						}
+		// 				}
 
-					} else {
+		// 			} else {
 
-						hp.setCursor( 1.5 );
+		// 				hp.setCursor( 1.5 );
 
-					}
+		// 			}
 
-				} );
+		// 		} );
 
-			}
+		// 	}
 
-		}
+		// }
 
-		HandRaySystem.queries = {
-			intersectable: {
-				components: [ Intersectable ]
-			}
-		};
+		// HandRaySystem.queries = {
+		// 	intersectable: {
+		// 		components: [ Intersectable ]
+		// 	}
+		// };
 
 		// class HandsInstructionText extends TagComponent { }
 
