@@ -103,8 +103,8 @@ function init() {
     menuEntity.addComponent(Intersectable);
     menuEntity.addComponent(OffsetFromCamera, { x: 0.4, y: 0, z: -1 });
     menuEntity.addComponent(NeedCalibration);
-    menuEntity.addComponent(Draggable);
     menuEntity.addComponent(Object3D, { object: menuMesh });
+    menuEntity.addComponent(Draggable);
 
     // Handle window resize
     window.addEventListener('resize', onWindowResize);
