@@ -30,11 +30,11 @@ export function createScene() {
 
     // Add Video Sources
     const sourceWebM = document.createElement('source');
-    sourceWebM.src = 'textures/MaryOculus.webm';
+    sourceWebM.src = '/textures/MaryOculus.webm';
     sourceWebM.type = 'video/webm';
 
     const sourceMP4 = document.createElement('source');
-    sourceMP4.src = 'textures/MaryOculus.mp4';
+    sourceMP4.src = '/textures/MaryOculus.mp4';
     sourceMP4.type = 'video/mp4';
 
     video.appendChild(sourceWebM);
