@@ -36,6 +36,24 @@ function fetchVideoAndPlay() {
     })
 }
 
+function playPauseToggle()
+{
+    var playPromise = video.play();
+ 
+    if (playPromise !== undefined) {
+        playPromise.then(_ => {
+            // Automatic playback started!
+            // Show playing UI.
+            // We can now safely pause video...
+            video.pause();
+        })
+        .catch(error => {
+            // Auto-play was prevented
+            // Show paused UI.
+        });
+    }
+}
+
 function onWindowResize() {
     camera.aspect = window.innerWidth / window.innerHeight;
     camera.updateProjectionMatrix();
@@ -158,7 +176,7 @@ function init() {
     const exitText = UI.createInstructionText(world, scene, 'Exiting session...', [0, 1.5, -0.6], false);
 
     // Create menu buttons
-    UI.createButton(world, menuMesh, 'play', 0xffd3b5, 0.18, () => onButtonClick); // Orange
+    UI.createButton(world, menuMesh, 'play', 0xffd3b5, 0.18, () => playPauseToggle()); // Orange
     // UI.createButton(world, menuMesh, null, 0xffd3b5, 0.18, () => torusKnot.material.color.setHex(0xffd3b5)); // Orange
     // UI.createButton(world, menuMesh, null, 0xe84a5f, 0.06, () => torusKnot.material.color.setHex(0xe84a5f)); // Pink
     // UI.createButton(world, menuMesh, 'reset', 0x355c7d, -0.06, () => torusKnot.material.color.setHex(0xffffff)); // Reset
