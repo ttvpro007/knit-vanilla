@@ -57,11 +57,68 @@ function init() {
     document.body.appendChild( container );
 
     // Scene setup
-    ({scene, video} = Scene.createScene());
+    // ({scene, video} = Scene.createScene());
+    scene = Scene.createScene();
 
     // Camera setup
-    camera = new THREE.PerspectiveCamera(50, window.innerWidth / window.innerHeight, 0.1, 10);
+    camera = new THREE.PerspectiveCamera(70, window.innerWidth / window.innerHeight, 1, 2000);
+    camera.layers.enable( 1 ); // render left view when no stereo available
     camera.position.set(0, 1.2, 0.3);
+
+    // video
+    video = document.createElement('video');
+    video.id = 'video';
+    video.loop = true;
+    video.muted = true;
+    video.crossOrigin = 'anonymous';
+    video.playsInline = true;
+    video.style.display = 'none';
+
+    const texture = new THREE.VideoTexture( video );
+    texture.colorSpace = THREE.SRGBColorSpace;
+
+    // left
+    const geometry1 = new THREE.SphereGeometry( 500, 60, 40 );
+    // invert the geometry on the x-axis so that all of the faces point inward
+    geometry1.scale( - 1, 1, 1 );
+
+    const uvs1 = geometry1.attributes.uv.array;
+
+    for ( let i = 0; i < uvs1.length; i += 2 ) {
+
+        uvs1[ i ] *= 0.5;
+
+    }
+
+    const material1 = new THREE.MeshBasicMaterial( { map: texture } );
+
+    const mesh1 = new THREE.Mesh( geometry1, material1 );
+    mesh1.rotation.y = - Math.PI / 2;
+    mesh1.layers.set( 1 ); // display in left eye only
+    scene.add( mesh1 );
+
+    // right
+
+    const geometry2 = new THREE.SphereGeometry( 500, 60, 40 );
+    geometry2.scale( - 1, 1, 1 );
+
+    const uvs2 = geometry2.attributes.uv.array;
+
+    for ( let i = 0; i < uvs2.length; i += 2 ) {
+
+        uvs2[ i ] *= 0.5;
+        uvs2[ i ] += 0.5;
+
+    }
+
+    const material2 = new THREE.MeshBasicMaterial( { map: texture } );
+
+    const mesh2 = new THREE.Mesh( geometry2, material2 );
+    mesh2.rotation.y = - Math.PI / 2;
+    mesh2.layers.set( 2 ); // display in right eye only
+    scene.add( mesh2 );
+
+    //
 
     renderer = new THREE.WebGLRenderer( { antialias: true } );
     renderer.setPixelRatio( window.devicePixelRatio );
@@ -98,8 +155,8 @@ function init() {
     const exitText = UI.createInstructionText(world, scene, 'Exiting session...', [0, 1.5, -0.6], false);
 
     // Create menu buttons
-    UI.createButton(world, menuMesh, 'play', 0xffd3b5, 0.3, () => onButtonClick); // Orange
-    UI.createButton(world, menuMesh, null, 0xffd3b5, 0.18, () => torusKnot.material.color.setHex(0xffd3b5)); // Orange
+    UI.createButton(world, menuMesh, 'play', 0xffd3b5, 0.18, () => onButtonClick); // Orange
+    // UI.createButton(world, menuMesh, null, 0xffd3b5, 0.18, () => torusKnot.material.color.setHex(0xffd3b5)); // Orange
     UI.createButton(world, menuMesh, null, 0xe84a5f, 0.06, () => torusKnot.material.color.setHex(0xe84a5f)); // Pink
     UI.createButton(world, menuMesh, 'reset', 0x355c7d, -0.06, () => torusKnot.material.color.setHex(0xffffff)); // Reset
     UI.createButton(world, menuMesh, 'exit', 0xff0000, -0.18, function () {
