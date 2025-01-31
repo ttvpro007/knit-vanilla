@@ -1,0 +1,72 @@
+import { System } from "three/examples/jsm/libs/ecsy.module.js";
+import Object3D from "../components/Object3D.js";
+import { Button } from "../components/Button.js";
+import Intersectable from "../tagcomponents/Intersectable.js";
+
+class HandRaySystem extends System {
+
+    init( attributes ) {
+
+        this.handPointers = attributes.handPointers;
+
+    }
+
+    execute( /* delta, time */ ) {
+
+        this.handPointers.forEach( hp => {
+
+            let distance = null;
+            let intersectingEntity = null;
+            this.queries.intersectable.results.forEach( entity => {
+
+                const object = entity.getComponent( Object3D ).object;
+                const intersections = hp.intersectObject( object, false );
+                if ( intersections && intersections.length > 0 ) {
+
+                    if ( distance == null || intersections[ 0 ].distance < distance ) {
+
+                        distance = intersections[ 0 ].distance;
+                        intersectingEntity = entity;
+
+                    }
+
+                }
+
+            } );
+            if ( distance ) {
+
+                hp.setCursor( distance );
+                if ( intersectingEntity.hasComponent( Button ) ) {
+
+                    const button = intersectingEntity.getMutableComponent( Button );
+                    if ( hp.isPinched() ) {
+
+                        button.currState = 'pressed';
+
+                    } else if ( button.currState != 'pressed' ) {
+
+                        button.currState = 'hovered';
+
+                    }
+
+                }
+
+            } else {
+
+                hp.setCursor( 1.5 );
+
+            }
+
+        } );
+
+    }
+
+}
+
+HandRaySystem.queries = {
+    intersectable: {
+        components: [ Intersectable ]
+    }
+};
+
+export default HandRaySystem;
