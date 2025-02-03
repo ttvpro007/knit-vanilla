@@ -2,22 +2,29 @@ import * as THREE from 'three';
 import Object3D from '../components/Object3D.js';  
 import Rotating from '../tagcomponents/Rotating.js';
 
+import * as ModelFactory from '../examples/utils/ModelFactory.js';
+
 export function createScene() {
     const scene = new THREE.Scene();
-    scene.background = new THREE.Color( 0x101010 );
+    scene.background = new THREE.Color( 0x505050 );
 
     // Lighting
-    scene.add(new THREE.HemisphereLight(0xcccccc, 0x999999, 3));
 
-    const light = new THREE.DirectionalLight(0xffffff, 3);
-    light.position.set(0, 6, 0);
-    light.castShadow = true;
-    light.shadow.camera.top = 2;
-    light.shadow.camera.bottom = -2;
-    light.shadow.camera.right = 2;
-    light.shadow.camera.left = -2;
-    light.shadow.mapSize.set(4096, 4096);
+    var light = ModelFactory.light;
+    var hemLight = ModelFactory.hemLight;
+
+    // scene.add(new THREE.HemisphereLight(0xcccccc, 0x999999, 3));
+
+    // const light = new THREE.DirectionalLight(0xffffff, 3);
+    // light.position.set(0, 6, 0);
+    // light.castShadow = true;
+    // light.shadow.camera.top = 2;
+    // light.shadow.camera.bottom = -2;
+    // light.shadow.camera.right = 2;
+    // light.shadow.camera.left = -2;
+    // light.shadow.mapSize.set(4096, 4096);
     scene.add(light);
+    scene.add(hemLight);
 
     const video = document.getElementById( 'video' );
     

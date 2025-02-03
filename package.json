@@ -2,10 +2,10 @@
   "private": true,
   "dependencies": {
     "@react-three/drei": "^9.121.4",
-    "@react-three/fiber": "^8.17.14",
     "@react-three/xr": "^6.6.0",
     "@vercel/edge": "^1.2.1",
-    "three": "^0.172.0"
+    "three": "^0.173.0",
+    "three-mesh-ui": "^6.5.4"
   },
   "devDependencies": {
     "vite": "^6.0.11"
