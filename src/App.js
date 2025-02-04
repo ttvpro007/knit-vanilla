@@ -11,8 +11,8 @@ import NeedCalibration from './tagcomponents/NeedCalibration.js';
 import Draggable from './components/Draggable.js';
 import * as Controllers from './helpers/Controllers.js';
 import * as UI from './helpers/UI.js';
-import * as Scene from './helpers/Scene.js';
 import { setupWorld } from './helpers/World.js';
+import * as Scene from './helpers/Scene.js';
 // import VideoController from './components/VideoController.js';
 
 import * as ModelFactory from './examples/utils/ModelFactory.js';
@@ -163,7 +163,14 @@ function init() {
     vrControl.controllers[ 0 ].addEventListener( 'selectend', () => {
         selectState = false;
     } );	
+    // vrControl.controllers[ 1 ].addEventListener( 'selectstart', () => {
+    //     selectState = true;
+    // } );
+    // vrControl.controllers[ 1 ].addEventListener( 'selectend', () => {
+    //     selectState = false;
+    // } );	
     scene.add( vrControl.controllerGrips[ 0 ], vrControl.controllers[ 0 ] );
+    // scene.add( vrControl.controllerGrips[ 1 ], vrControl.controllers[ 1 ] );
 
 
 	//////////
@@ -215,11 +222,13 @@ function updateButtons() {
 	if ( renderer.xr.isPresenting ) {
 
 		vrControl.setFromController( 0, raycaster.ray );
+		// vrControl.setFromController( 1, raycaster.ray );
 
 		intersect = raycast();
 
 		// Position the little white dot at the end of the controller pointing ray
 		if ( intersect ) vrControl.setPointerAt( 0, intersect.point );
+		// if ( intersect ) vrControl.setPointerAt( 1, intersect.point );
     // }
 	} else if ( mouse.x !== null && mouse.y !== null ) {
 
