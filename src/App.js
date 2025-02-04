@@ -18,6 +18,37 @@ import { setupWorld } from './helpers/World.js';
 import * as ModelFactory from './examples/utils/ModelFactory.js';
 
 const raycaster = new THREE.Raycaster();
+
+const mouse = new THREE.Vector2();
+mouse.x = mouse.y = null;
+
+let selectState = false;
+
+window.addEventListener( 'pointermove', ( event ) => {
+    mouse.x = ( event.clientX / window.innerWidth ) * 2 - 1;
+    mouse.y = -( event.clientY / window.innerHeight ) * 2 + 1;
+} );
+
+window.addEventListener( 'pointerdown', () => {
+    selectState = true;
+} );
+
+window.addEventListener( 'pointerup', () => {
+    selectState = false;
+} );
+
+window.addEventListener( 'touchstart', ( event ) => {
+    selectState = true;
+    mouse.x = ( event.touches[ 0 ].clientX / window.innerWidth ) * 2 - 1;
+    mouse.y = -( event.touches[ 0 ].clientY / window.innerHeight ) * 2 + 1;
+} );
+
+window.addEventListener( 'touchend', () => {
+    selectState = false;
+    mouse.x = null;
+    mouse.y = null;
+} );
+
 const clock = new THREE.Clock();
 const objsToTest = [];
 let world, camera, scene, video, renderer, vrControl;
@@ -32,7 +63,7 @@ function playPauseToggle() {
 
 function exitSession() {
     setTimeout(() => {
-        renderer.xr.getSession().end();
+        renderer?.xr?.getSession()?.end();
     }, 200);
 }
 
@@ -46,10 +77,10 @@ function loop() {
     ThreeMeshUI.update();
 	// controls.update();
 
-    const delta = clock.getDelta();
-    const elapsedTime = clock.elapsedTime;
+    // const delta = clock.getDelta();
+    // const elapsedTime = clock.elapsedTime;
     renderer.xr.updateCamera( camera );
-    world.execute( delta, elapsedTime );
+    // world.execute( delta, elapsedTime );
     renderer.render( scene, camera );
 
 	updateButtons();
@@ -87,39 +118,39 @@ function init() {
 
     document.body.appendChild( VRButton.createButton( renderer, sessionInit ) );
 
-    // Setup left-hand (index 0)
-    const controller1 = Controllers.setupController(renderer, scene, 0);
-    const controllerGrip1 = Controllers.setupControllerGrip(renderer, scene, 0);
-    const hand1 = Controllers.setupHand(renderer, scene, 0);
-    const handPointer1 = Controllers.setupHandPointer(hand1, controller1);
+    // // Setup left-hand (index 0)
+    // const controller1 = Controllers.setupController(renderer, scene, 0);
+    // const controllerGrip1 = Controllers.setupControllerGrip(renderer, scene, 0);
+    // const hand1 = Controllers.setupHand(renderer, scene, 0);
+    // const handPointer1 = Controllers.setupHandPointer(hand1, controller1);
 
-    // Setup right-hand (index 1)
-    const controller2 = Controllers.setupController(renderer, scene, 1);
-    const controllerGrip2 = Controllers.setupControllerGrip(renderer, scene, 1);
-    const hand2 = Controllers.setupHand(renderer, scene, 1);
-    const handPointer2 = Controllers.setupHandPointer(hand2, controller2);
+    // // Setup right-hand (index 1)
+    // const controller2 = Controllers.setupController(renderer, scene, 1);
+    // const controllerGrip2 = Controllers.setupControllerGrip(renderer, scene, 1);
+    // const hand2 = Controllers.setupHand(renderer, scene, 1);
+    // const handPointer2 = Controllers.setupHandPointer(hand2, controller2);
 
-    world = setupWorld(renderer, camera, [controllerGrip1, controllerGrip2], [handPointer1, handPointer2]);
+    // world = setupWorld(renderer, camera, [controllerGrip1, controllerGrip2], [handPointer1, handPointer2]);
 
-    // Scene Setup
-    const menuMesh = UI.createMenu(scene, 0, 0, -2);
+    // // Scene Setup
+    // const menuMesh = UI.createMenu(scene, 0, 0, -2);
 
-    const testButton = document.getElementById( 'testButton' );
-    testButton.addEventListener('click', playPauseToggle);
+    // const testButton = document.getElementById( 'testButton' );
+    // testButton.addEventListener('click', playPauseToggle);
 
-    // Create menu buttons
-    UI.createButton(world, menuMesh, 'play/pause', 0xffd3b5, -0.2, 0, 0.01, playPauseToggle);
-    UI.createButton(world, menuMesh, 'exit', 0xffd3b5, 0.2, 0, 0.01, playPauseToggle);
-    // UI.createButtonExt(world, menuMesh, 'play/pause', -0.2, 0, 0.01, playPauseToggle);
-    // UI.createButtonExt(world, menuMesh, 'exit', 0.2, 0, 0.01, exitSession);
+    // // Create menu buttons
+    // UI.createButton(world, menuMesh, 'play/pause', 0xffd3b5, -0.2, 0, 0.01, playPauseToggle);
+    // UI.createButton(world, menuMesh, 'exit', 0xffd3b5, 0.2, 0, 0.01, playPauseToggle);
+    // // UI.createButtonExt(world, menuMesh, 'play/pause', -0.2, 0, 0.01, playPauseToggle);
+    // // UI.createButtonExt(world, menuMesh, 'exit', 0.2, 0, 0.01, exitSession);
 
-    // Menu entity
-    const menuEntity = world.createEntity();
-    menuEntity.addComponent(Intersectable);
-    menuEntity.addComponent(OffsetFromCamera, { x: 0.4, y: 0, z: -1 });
-    menuEntity.addComponent(NeedCalibration);
-    menuEntity.addComponent(Object3D, { object: menuMesh });
-    menuEntity.addComponent(Draggable);
+    // // Menu entity
+    // const menuEntity = world.createEntity();
+    // menuEntity.addComponent(Intersectable);
+    // menuEntity.addComponent(OffsetFromCamera, { x: 0.4, y: 0, z: -1 });
+    // menuEntity.addComponent(NeedCalibration);
+    // menuEntity.addComponent(Object3D, { object: menuMesh });
+    // menuEntity.addComponent(Draggable);
     
     ////////////////
     // Controllers
@@ -151,17 +182,16 @@ function init() {
 ///////////////////
 
 function makePanel() {
-
     // Container block, in which we put the two buttons.
     var container = ModelFactory.makeUIPanel();
     var buttonNext = ModelFactory.makeButton(
-        "N",
+        "Exit",
         () => {
             exitSession();
         }
     );
     var buttonPrevious = ModelFactory.makeButton(
-        "P",
+        "Play/Pause",
         () => {
             playPauseToggle();
         }
@@ -190,14 +220,14 @@ function updateButtons() {
 
 		// Position the little white dot at the end of the controller pointing ray
 		if ( intersect ) vrControl.setPointerAt( 0, intersect.point );
-    }
-	// } else if ( mouse.x !== null && mouse.y !== null ) {
+    // }
+	} else if ( mouse.x !== null && mouse.y !== null ) {
 
-	// 	raycaster.setFromCamera( mouse, camera );
+		raycaster.setFromCamera( mouse, camera );
 
-	// 	intersect = raycast();
+		intersect = raycast();
 
-	// }
+	}
 
 	// Update targeted button state (if any)
 

@@ -234,7 +234,7 @@ export function makeButton(label, action)
         state: 'idle',
         attributes: {
             offset: 0.035,
-            backgroundColor: new THREE.Color( 0x666666 ),
+            backgroundColor: new THREE.Color( 0x999666 ),
             backgroundOpacity: 0.3,
             fontColor: new THREE.Color( 0xffffff )
         },
