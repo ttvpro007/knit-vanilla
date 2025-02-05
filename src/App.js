@@ -174,26 +174,10 @@ function updateButtons() {
         controllers.forEach((_, index) => {
 
 		    vrControl.setFromController( index, raycaster.ray );
-		    // intersection = raycast( raycaster );
-
-            objsToTest.reduce( ( closestIntersection, obj ) => {
-
-                const intersection = raycaster.intersectObject( obj, true );
-        
-                if ( !intersection[ index ] ) return closestIntersection;
-        
-                if ( !closestIntersection || intersection[ index ].distance < closestIntersection.distance ) {
-        
-                    intersection[ index ].object = obj;
-        
-                    return intersection[ index ];
-        
-                }
+		    intersect = raycast( index, raycaster );
                 
-                // Position the little white dot at the end of the controller pointing ray
-                if ( closestIntersection ) vrControl.setPointerAt( index, closestIntersection.point );
-
-            }, null );
+            // Position the little white dot at the end of the controller pointing ray
+            if ( closestIntersection ) vrControl.setPointerAt( index, closestIntersection.point );
 
 
         });
@@ -207,7 +191,7 @@ function updateButtons() {
 
 		raycaster.setFromCamera( mouse, camera );
 
-		intersect = raycast( raycaster );
+		intersect = raycast( 0, raycaster );
 
 	}
 
@@ -244,24 +228,45 @@ function updateButtons() {
 
 }
 
-function raycast(raycaster) {
+// function raycast(raycaster) {
 
-	return objsToTest.reduce( ( closestIntersection, obj ) => {
+// 	return objsToTest.reduce( ( closestIntersection, obj ) => {
 
-		const intersection = raycaster.intersectObject( obj, true );
+// 		const intersection = raycaster.intersectObject( obj, true );
 
-		if ( !intersection[ 0 ] ) return closestIntersection;
+// 		if ( !intersection[ 0 ] ) return closestIntersection;
 
-		if ( !closestIntersection || intersection[ 0 ].distance < closestIntersection.distance ) {
+// 		if ( !closestIntersection || intersection[ 0 ].distance < closestIntersection.distance ) {
 
-			intersection[ 0 ].object = obj;
+// 			intersection[ 0 ].object = obj;
 
-			return intersection[ 0 ];
+// 			return intersection[ 0 ];
 
-		}
+// 		}
 
-		return closestIntersection;
+// 		return closestIntersection;
 
-	}, null );
+// 	}, null );
 
+// }
+
+function raycast(index, raycaster) {
+
+    return objsToTest.reduce( ( closestIntersection, obj ) => {
+
+        const intersection = raycaster.intersectObject( obj, true );
+
+        if ( !intersection[ index ] ) return closestIntersection;
+
+        if ( !closestIntersection || intersection[ index ].distance < closestIntersection.distance ) {
+
+            intersection[ index ].object = obj;
+
+            return intersection[ index ];
+
+        }
+
+        return closestIntersection;
+
+    }, null );
 }
