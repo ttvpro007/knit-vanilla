@@ -12,17 +12,7 @@ export function createScene() {
 
     var light = ModelFactory.light;
     var hemLight = ModelFactory.hemLight;
-
-    // scene.add(new THREE.HemisphereLight(0xcccccc, 0x999999, 3));
-
-    // const light = new THREE.DirectionalLight(0xffffff, 3);
-    // light.position.set(0, 6, 0);
-    // light.castShadow = true;
-    // light.shadow.camera.top = 2;
-    // light.shadow.camera.bottom = -2;
-    // light.shadow.camera.right = 2;
-    // light.shadow.camera.left = -2;
-    // light.shadow.mapSize.set(4096, 4096);
+    
     scene.add(light);
     scene.add(hemLight);
 
@@ -39,9 +29,7 @@ export function createScene() {
     const uvs1 = geometry1.attributes.uv.array;
 
     for ( let i = 0; i < uvs1.length; i += 2 ) {
-
         uvs1[ i ] *= 0.5;
-
     }
 
     const material1 = new THREE.MeshBasicMaterial( { map: texture } );

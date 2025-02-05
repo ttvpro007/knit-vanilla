@@ -1,20 +1,8 @@
 import * as THREE from 'three';
 import ThreeMeshUI from 'three-mesh-ui';
 import VRControl from './examples/utils/VRControl.js';
-
 import { VRButton } from 'three/addons/webxr/VRButton.js';
-
-import Object3D from './components/Object3D.js';
-import Intersectable from './tagcomponents/Intersectable.js';
-import OffsetFromCamera from './components/OffsetFromCamera.js';
-import NeedCalibration from './tagcomponents/NeedCalibration.js';
-import Draggable from './components/Draggable.js';
-import * as Controllers from './helpers/Controllers.js';
-import * as UI from './helpers/UI.js';
-import { setupWorld } from './helpers/World.js';
 import * as Scene from './helpers/Scene.js';
-// import VideoController from './components/VideoController.js';
-
 import * as ModelFactory from './examples/utils/ModelFactory.js';
 
 const raycaster = new THREE.Raycaster();
@@ -75,14 +63,8 @@ function onWindowResize() {
 
 function loop() {
     ThreeMeshUI.update();
-	// controls.update();
-
-    // const delta = clock.getDelta();
-    // const elapsedTime = clock.elapsedTime;
     renderer.xr.updateCamera( camera );
-    // world.execute( delta, elapsedTime );
     renderer.render( scene, camera );
-
 	updateButtons();
 }
 
@@ -117,40 +99,6 @@ function init() {
     const sessionInit = { requiredFeatures: [ 'hand-tracking' ] };
 
     document.body.appendChild( VRButton.createButton( renderer, sessionInit ) );
-
-    // // Setup left-hand (index 0)
-    // const controller1 = Controllers.setupController(renderer, scene, 0);
-    // const controllerGrip1 = Controllers.setupControllerGrip(renderer, scene, 0);
-    // const hand1 = Controllers.setupHand(renderer, scene, 0);
-    // const handPointer1 = Controllers.setupHandPointer(hand1, controller1);
-
-    // // Setup right-hand (index 1)
-    // const controller2 = Controllers.setupController(renderer, scene, 1);
-    // const controllerGrip2 = Controllers.setupControllerGrip(renderer, scene, 1);
-    // const hand2 = Controllers.setupHand(renderer, scene, 1);
-    // const handPointer2 = Controllers.setupHandPointer(hand2, controller2);
-
-    // world = setupWorld(renderer, camera, [controllerGrip1, controllerGrip2], [handPointer1, handPointer2]);
-
-    // // Scene Setup
-    // const menuMesh = UI.createMenu(scene, 0, 0, -2);
-
-    // const testButton = document.getElementById( 'testButton' );
-    // testButton.addEventListener('click', playPauseToggle);
-
-    // // Create menu buttons
-    // UI.createButton(world, menuMesh, 'play/pause', 0xffd3b5, -0.2, 0, 0.01, playPauseToggle);
-    // UI.createButton(world, menuMesh, 'exit', 0xffd3b5, 0.2, 0, 0.01, playPauseToggle);
-    // // UI.createButtonExt(world, menuMesh, 'play/pause', -0.2, 0, 0.01, playPauseToggle);
-    // // UI.createButtonExt(world, menuMesh, 'exit', 0.2, 0, 0.01, exitSession);
-
-    // // Menu entity
-    // const menuEntity = world.createEntity();
-    // menuEntity.addComponent(Intersectable);
-    // menuEntity.addComponent(OffsetFromCamera, { x: 0.4, y: 0, z: -1 });
-    // menuEntity.addComponent(NeedCalibration);
-    // menuEntity.addComponent(Object3D, { object: menuMesh });
-    // menuEntity.addComponent(Draggable);
     
     ////////////////
     // Controllers
@@ -162,15 +110,15 @@ function init() {
     } );
     vrControl.controllers[ 0 ].addEventListener( 'selectend', () => {
         selectState = false;
+    } );
+    vrControl.controllers[ 1 ].addEventListener( 'selectstart', () => {
+        selectState = true;
+    } );
+    vrControl.controllers[ 1 ].addEventListener( 'selectend', () => {
+        selectState = false;
     } );	
-    // vrControl.controllers[ 1 ].addEventListener( 'selectstart', () => {
-    //     selectState = true;
-    // } );
-    // vrControl.controllers[ 1 ].addEventListener( 'selectend', () => {
-    //     selectState = false;
-    // } );	
     scene.add( vrControl.controllerGrips[ 0 ], vrControl.controllers[ 0 ] );
-    // scene.add( vrControl.controllerGrips[ 1 ], vrControl.controllers[ 1 ] );
+    scene.add( vrControl.controllerGrips[ 1 ], vrControl.controllers[ 1 ] );
 
 
 	//////////
@@ -221,20 +169,28 @@ function updateButtons() {
 
 	if ( renderer.xr.isPresenting ) {
 
-		vrControl.setFromController( 0, raycaster.ray );
-		// vrControl.setFromController( 1, raycaster.ray );
+        const controllers = vrControl.controllers;
 
-		intersect = raycast();
+        controllers.forEach((_, index) => {
+
+		    vrControl.setFromController( index, raycaster.ray );
+		    intersect = raycast( raycaster );
+            
+            // Position the little white dot at the end of the controller pointing ray
+		    if ( intersect ) vrControl.setPointerAt( index, intersect.point );
+
+        });
+
+		// vrControl.setFromController( 0, raycaster.ray );
+		// intersect = raycast( raycaster );
 
 		// Position the little white dot at the end of the controller pointing ray
-		if ( intersect ) vrControl.setPointerAt( 0, intersect.point );
-		// if ( intersect ) vrControl.setPointerAt( 1, intersect.point );
-    // }
+		// if ( intersect ) vrControl.setPointerAt( 0, intersect.point );
 	} else if ( mouse.x !== null && mouse.y !== null ) {
 
 		raycaster.setFromCamera( mouse, camera );
 
-		intersect = raycast();
+		intersect = raycast( raycaster );
 
 	}
 
@@ -271,7 +227,7 @@ function updateButtons() {
 
 }
 
-function raycast() {
+function raycast(raycaster) {
 
 	return objsToTest.reduce( ( closestIntersection, obj ) => {
 
