@@ -242,47 +242,63 @@ function makePanel() {
 // }
 
 function updateButtons() {
-    let globalIntersect = null;
-  
     if (renderer.xr.isPresenting) {
-        vrControl.controllers.forEach((_, index) => {
-            // Update the ray for the controller.
+        // Process each controller separately.
+        vrControl.controllers.forEach((controller, index) => {
+            // Set up the ray for the current controller.
             vrControl.setFromController(index, raycaster.ray);
             
-            // Get intersections for this controller.
+            // Use Three.js's built-in method: get intersections for this controller.
             const intersections = raycaster.intersectObjects(objsToTest, true);
             
+            // If we have an intersection, update the pointer and the button state.
             if (intersections.length > 0) {
-                // Update the pointer for this controller.
-                vrControl.setPointerAt(index, intersections[0].point);
-                
-                // Check if this intersection is the closest overall.
-                if (!globalIntersect || intersections[0].distance < globalIntersect.distance) {
-                    globalIntersect = intersections[0];
+                const intersect = intersections[0]; // Always use the closest hit.
+                vrControl.setPointerAt(index, intersect.point);
+            
+                if (intersect.object.isUI) {
+                    if (selectState) {
+                    intersect.object.setState('selected');
+                    } else {
+                    intersect.object.setState('hovered');
+                    }
                 }
+            }
+        });
+  
+        // For all UI objects not hit by any controller, set their state to 'idle'.
+        objsToTest.forEach((obj) => {
+            // Check if any controller is intersecting this UI object.
+            const isTargeted = vrControl.controllers.some((_, index) => {
+                vrControl.setFromController(index, raycaster.ray);
+                const intersections = raycaster.intersectObjects([obj], true);
+                return intersections.length > 0;
+            });
+            if (!isTargeted && obj.isUI) {
+                obj.setState('idle');
             }
         });
       
     } else if (mouse.x !== null && mouse.y !== null) {
+        // Mouse-based raycasting.
         raycaster.setFromCamera(mouse, camera);
         const intersections = raycaster.intersectObjects(objsToTest, true);
-        globalIntersect = intersections.length > 0 ? intersections[0] : null;
-    }
-  
-    // Update the UI state for the globally closest intersected button.
-    if (globalIntersect && globalIntersect.object.isUI) {
-        if (selectState) {
-            globalIntersect.object.setState('selected');
-        } else {
-            globalIntersect.object.setState('hovered');
+        const intersect = intersections.length > 0 ? intersections[0] : null;
+        
+        if (intersect && intersect.object.isUI) {
+            if (selectState) {
+                intersect.object.setState('selected');
+            } else {
+                intersect.object.setState('hovered');
+            }
         }
+        
+        // Reset UI state for non-targeted objects.
+        objsToTest.forEach((obj) => {
+            if ((!intersect || obj !== intersect.object) && obj.isUI) {
+                obj.setState('idle');
+            }
+        });
     }
-  
-    // Reset non-targeted buttons.
-    objsToTest.forEach((obj) => {
-        if ((!globalIntersect || obj !== globalIntersect.object) && obj.isUI) {
-            obj.setState('idle');
-        }
-    });
 }
   
