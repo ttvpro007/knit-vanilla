@@ -174,10 +174,27 @@ function updateButtons() {
         controllers.forEach((_, index) => {
 
 		    vrControl.setFromController( index, raycaster.ray );
-		    intersect = raycast( raycaster );
-            
-            // Position the little white dot at the end of the controller pointing ray
-		    if ( intersect ) vrControl.setPointerAt( index, intersect.point );
+		    // intersection = raycast( raycaster );
+
+            objsToTest.reduce( ( closestIntersection, obj ) => {
+
+                const intersection = raycaster.intersectObject( obj, true );
+        
+                if ( !intersection[ index ] ) return closestIntersection;
+        
+                if ( !closestIntersection || intersection[ index ].distance < closestIntersection.distance ) {
+        
+                    intersection[ index ].object = obj;
+        
+                    return intersection[ index ];
+        
+                }
+                
+                // Position the little white dot at the end of the controller pointing ray
+                if ( closestIntersection ) vrControl.setPointerAt( index, closestIntersection.point );
+
+            }, null );
+
 
         });
 
