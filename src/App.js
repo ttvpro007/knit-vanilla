@@ -158,147 +158,85 @@ function makePanel() {
     return container;
 }
 
-// // Called in the loop, get intersection with either the mouse or the VR controllers,
-// // then update the buttons states according to result
-
-// function updateButtons() {
-
-// 	// Find closest intersecting object
-
-// 	let intersect;
-
-// 	if ( renderer.xr.isPresenting ) {
-
-//         const controllers = vrControl.controllers;
-
-//         controllers.forEach((_, index) => {
-
-// 		    vrControl.setFromController( index, raycaster.ray );
-// 		    intersect = raycast( index, raycaster );
-                
-//             // Position the little white dot at the end of the controller pointing ray
-//             if ( intersect ) vrControl.setPointerAt( index, intersect.point );
-
-//         });
-
-// 	} else if ( mouse.x !== null && mouse.y !== null ) {
-
-// 		raycaster.setFromCamera( mouse, camera );
-
-// 		intersect = raycast( 0, raycaster );
-
-// 	}
-
-// 	// Update targeted button state (if any)
-
-// 	if ( intersect && intersect.object.isUI ) {
-
-// 		if ( selectState ) {
-
-// 			// Component.setState internally call component.set with the options you defined in component.setupState
-// 			intersect.object.setState( 'selected' );
-
-// 		} else {
-
-// 			// Component.setState internally call component.set with the options you defined in component.setupState
-// 			intersect.object.setState( 'hovered' );
-// 		}
-// 	}
-
-// 	// Update non-targeted buttons state
-
-// 	objsToTest.forEach( ( obj ) => {
-
-// 		if ( ( !intersect || obj !== intersect.object ) && obj.isUI ) {
-
-// 			// Component.setState internally call component.set with the options you defined in component.setupState
-// 			obj.setState( 'idle' );
-
-// 		}
-
-// 	} );
-
-// }
-
-// function raycast(index, raycaster) {
-
-//     return objsToTest.reduce( ( closestIntersection, obj ) => {
-
-//         const intersection = raycaster.intersectObject( obj, true );
-
-//         if ( !intersection[ index ] ) return closestIntersection;
-
-//         if ( !closestIntersection || intersection[ index ].distance < closestIntersection.distance ) {
-
-//             intersection[ index ].object = obj;
-
-//             return intersection[ index ];
-
-//         }
-
-//         return closestIntersection;
-
-//     }, null );
-// }
+// Called in the loop, get intersection with either the mouse or the VR controllers,
+// then update the buttons states according to result
 
 function updateButtons() {
-    if (renderer.xr.isPresenting) {
-        // Process each controller separately.
-        vrControl.controllers.forEach((controller, index) => {
-            // Set up the ray for the current controller.
-            vrControl.setFromController(index, raycaster.ray);
-            
-            // Use Three.js's built-in method: get intersections for this controller.
-            const intersections = raycaster.intersectObjects(objsToTest, true);
-            
-            // If we have an intersection, update the pointer and the button state.
-            if (intersections.length > 0) {
-                const intersect = intersections[0]; // Always use the closest hit.
-                vrControl.setPointerAt(index, intersect.point);
-            
-                if (intersect.object.isUI) {
-                    if (selectState) {
-                    intersect.object.setState('selected');
-                    } else {
-                    intersect.object.setState('hovered');
-                    }
-                }
-            }
+
+	// Find closest intersecting object
+
+	let intersect;
+
+	if ( renderer.xr.isPresenting ) {
+
+        const controllers = vrControl.controllers;
+
+        controllers.forEach((_, index) => {
+
+		    vrControl.setFromController( index, raycaster.ray );
+		    intersect = raycast( raycaster );
+                
+            // Position the little white dot at the end of the controller pointing ray
+            if ( intersect ) vrControl.setPointerAt( index, intersect.point );
+
         });
-  
-        // For all UI objects not hit by any controller, set their state to 'idle'.
-        objsToTest.forEach((obj) => {
-            // Check if any controller is intersecting this UI object.
-            const isTargeted = vrControl.controllers.some((_, index) => {
-                vrControl.setFromController(index, raycaster.ray);
-                const intersections = raycaster.intersectObjects([obj], true);
-                return intersections.length > 0;
-            });
-            if (!isTargeted && obj.isUI) {
-                obj.setState('idle');
-            }
-        });
-      
-    } else if (mouse.x !== null && mouse.y !== null) {
-        // Mouse-based raycasting.
-        raycaster.setFromCamera(mouse, camera);
-        const intersections = raycaster.intersectObjects(objsToTest, true);
-        const intersect = intersections.length > 0 ? intersections[0] : null;
-        
-        if (intersect && intersect.object.isUI) {
-            if (selectState) {
-                intersect.object.setState('selected');
-            } else {
-                intersect.object.setState('hovered');
-            }
-        }
-        
-        // Reset UI state for non-targeted objects.
-        objsToTest.forEach((obj) => {
-            if ((!intersect || obj !== intersect.object) && obj.isUI) {
-                obj.setState('idle');
-            }
-        });
-    }
+
+	} else if ( mouse.x !== null && mouse.y !== null ) {
+
+		raycaster.setFromCamera( mouse, camera );
+
+		intersect = raycast( raycaster );
+
+	}
+
+	// Update targeted button state (if any)
+
+	if ( intersect && intersect.object.isUI ) {
+
+		if ( selectState ) {
+
+			// Component.setState internally call component.set with the options you defined in component.setupState
+			intersect.object.setState( 'selected' );
+
+		} else {
+
+			// Component.setState internally call component.set with the options you defined in component.setupState
+			intersect.object.setState( 'hovered' );
+		}
+	}
+
+	// Update non-targeted buttons state
+
+	objsToTest.forEach( ( obj ) => {
+
+		if ( ( !intersect || obj !== intersect.object ) && obj.isUI ) {
+
+			// Component.setState internally call component.set with the options you defined in component.setupState
+			obj.setState( 'idle' );
+
+		}
+
+	} );
+
 }
-  
+
+function raycast(raycaster) {
+
+    return objsToTest.reduce( ( closestIntersection, obj ) => {
+
+        const intersection = raycaster.intersectObject( obj, true );
+
+        if ( !intersection[ 0 ] ) return closestIntersection;
+
+        if ( !closestIntersection || intersection[ 0 ].distance < closestIntersection.distance ) {
+
+            intersection[ 0 ].object = obj;
+
+            return intersection[ 0 ];
+
+        }
+
+        return closestIntersection;
+
+    }, null );
+}
