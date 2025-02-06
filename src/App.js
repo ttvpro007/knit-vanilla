@@ -6,7 +6,6 @@ import ThreeMeshUI from 'three-mesh-ui';
 import VRControl from './examples/utils/VRControl.js';
 import { VRButton } from 'three/addons/webxr/VRButton.js';
 import * as Scene from './helpers/Scene.js';
-import * as ModelFactory from './examples/utils/ModelFactory.js';
 import * as UI from './helpers/UI.js';
 
 // =======================
@@ -23,6 +22,9 @@ let camera, scene, video, renderer, vrControl;
 
 // Global variable to track the currently active controller.
 let activeController = null;
+
+// Global variable to store the cached intersection.
+let cachedIntersection = null;
 
 // =======================
 // Event Listeners
@@ -173,18 +175,23 @@ function makePanel() {
  * @returns {THREE.Intersection|null} - The closest intersection or null.
  */
 function raycast(raycaster) {
-    return objsToTest.reduce((closestIntersection, obj) => {
-        const intersection = raycaster.intersectObject(obj, true);
-
-        if (!intersection[0]) return closestIntersection;
-
-        if (!closestIntersection || intersection[0].distance < closestIntersection.distance) {
-            intersection[0].object = obj;
-            return intersection[0];
+    // If selectState is true and we have a cached intersection, return it.
+    if (selectState && cachedIntersection) {
+        return cachedIntersection;
+    }
+    
+    // Otherwise, compute the intersection.
+    cachedIntersection = objsToTest.reduce((closestIntersection, obj) => {
+        const intersections = raycaster.intersectObject(obj, true);
+        if (!intersections[0]) return closestIntersection;
+        if (!closestIntersection || intersections[0].distance < closestIntersection.distance) {
+            intersections[0].object = obj;
+            return intersections[0];
         }
-
         return closestIntersection;
     }, null);
+    
+    return cachedIntersection;
 }
 
 /**
@@ -238,7 +245,7 @@ function updateButtons() {
                 obj.position.copy(obj.userData.dragData.startPos.clone().add(delta));
             } else {
                 // Use mouse coordinates.
-                const conversionFactor = 0.5; // Adjust as needed for your scene scale.
+                const conversionFactor = 1; // Adjust as needed for your scene scale.
                 const deltaX = mouse.x - obj.userData.dragData.startPointer.x;
                 const deltaY = mouse.y - obj.userData.dragData.startPointer.y;
                 obj.position.x = obj.userData.dragData.startPos.x + deltaX * conversionFactor;
@@ -302,15 +309,6 @@ function init() {
 
     // Set up VR controllers
     vrControl = VRControl(renderer, camera, scene);
-    // Controller event listeners for select start/end
-    // vrControl.controllers.forEach((controller) => {
-    //     controller.addEventListener('selectstart', () => {
-    //         selectState = true;
-    //     });
-    //     controller.addEventListener('selectend', () => {
-    //         selectState = false;
-    //     });
-    // });
     
     // In your controller event listeners:
     vrControl.controllers.forEach((controller) => {

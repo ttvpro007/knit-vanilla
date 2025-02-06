@@ -139,7 +139,7 @@ const PANEL_CONFIG = {
     fontFamily: FontJSON,        // Font JSON definition (should be imported or defined)
     fontTexture: FontImage,      // Font texture image (should be imported or defined)
     fontSize: 0.07,
-    padding: 0.02,
+    padding: 0.05,
     borderRadius: 0.11,
     justifyContent: 'center',
     contentDirection: 'row-reverse',
