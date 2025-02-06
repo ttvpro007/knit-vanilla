@@ -180,7 +180,7 @@ const createSphereMesh = (scene, texture, uvModifier, layer) => {
     return mesh;
 };
 
-export function makeUIPanel() {
+export function makeUIPanel(x, y, z) {
 
 	// Container block, in which we put the two buttons.
 	// We don't define width and height, it will be set automatically from the children's dimensions
@@ -196,7 +196,7 @@ export function makeUIPanel() {
 		borderRadius: 0.11
 	} );
 
-	container.position.set( 0, 0.6, -1.2 );
+	container.position.set( x, y, z );
 	container.rotation.x = -0.55;
     return container;
 }

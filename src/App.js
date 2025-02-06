@@ -7,6 +7,7 @@ import VRControl from './examples/utils/VRControl.js';
 import { VRButton } from 'three/addons/webxr/VRButton.js';
 import * as Scene from './helpers/Scene.js';
 import * as ModelFactory from './examples/utils/ModelFactory.js';
+import * as UI from './helpers/UI.js';
 
 // =======================
 // Global Variables
@@ -94,17 +95,17 @@ function onWindowResize() {
  */
 function makePanel() {
     // Container block for the UI panel
-    const container = ModelFactory.makeUIPanel();
+    const container = UI.makeUIPanel(0, 0, -2);
 
     // Create buttons with their respective callback actions
-    const buttonNext = ModelFactory.makeButton("Exit", exitSession);
-    const buttonPrevious = ModelFactory.makeButton("Play/Pause", playPauseToggle);
+    const buttonNext = UI.makeButton("Exit", exitSession);
+    const buttonPrevious = UI.makeButton("Play/Pause", playPauseToggle);
 
     // Add buttons to the container
     container.add(buttonNext, buttonPrevious);
 
     // Add buttons to our list for raycasting tests
-    objsToTest.push(buttonNext, buttonPrevious);
+    objsToTest.push(buttonNext, buttonPrevious, container);
 
     return container;
 }
