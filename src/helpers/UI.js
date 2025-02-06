@@ -216,25 +216,20 @@ const PANEL_STATES = {
 // -------------------------
 
 /**
- * Creates a draggable UI panel (container) for UI elements.
+ * Creates a UI panel (container) for UI elements.
  *
- * The panel supports interactive states:
- * - "selected": when pressed and dragged.
- * - "hovered": when the pointer is over it.
- * - "idle": default appearance.
+ * The panel is set up with interactive states: "selected" for when the panel is dragged,
+ * "hovered" for mouse-over feedback, and "idle" for the default appearance.
  *
- * Drag logic is implemented by capturing pointer events:
- * - On pointerdown: store the initial pointer and panel positions, and switch to "selected" state.
- * - On pointermove: update the panel position based on pointer movement.
- * - On pointerup: stop dragging and revert to "idle" state.
- *
- * @param {number} x - The x-coordinate for the panel's starting position.
- * @param {number} y - The y-coordinate for the panel's starting position.
- * @param {number} z - The z-coordinate for the panel's starting position.
- * @returns {ThreeMeshUI.Block} The configured, draggable panel.
+ * @param {number} x - The x-coordinate for the panel's position.
+ * @param {number} y - The y-coordinate for the panel's position.
+ * @param {number} z - The z-coordinate for the panel's position.
+ * @param {Function} holdAction - The callback to trigger when the panel is held (e.g. start dragging).
+ * @param {Function} releasedAction - The callback to trigger when the panel is released (e.g. end dragging).
+ * @returns {ThreeMeshUI.Block} The configured panel.
  */
-export function makeUIPanel(x, y, z) {
-    // Create the panel using the base configuration.
+export function makeUIPanel(x, y, z, holdAction, releasedAction) {
+    // Create the container block with auto-fit dimensions using PANEL_CONFIG settings
     const container = new ThreeMeshUI.Block({
         justifyContent: PANEL_CONFIG.justifyContent,
         contentDirection: PANEL_CONFIG.contentDirection,
@@ -244,80 +239,34 @@ export function makeUIPanel(x, y, z) {
         padding: PANEL_CONFIG.padding,
         borderRadius: PANEL_CONFIG.borderRadius
     });
-  
-    // Setup interactive states.
+
+    // Setup the interactive states:
+
+    // "selected" state: when the panel is pressed or dragged.
     container.setupState({
         state: 'selected',
-        attributes: PANEL_STATES.selected.attributes
+        attributes: PANEL_STATES.selected.attributes,
+        onSet: holdAction.bind(container)  // Triggered when the panel enters the "selected" state.
     });
+
+    // "hovered" state: when the pointer is over the panel.
     container.setupState({
-      state: 'hovered',
-      attributes: PANEL_STATES.hovered.attributes
+        state: 'hovered',
+        attributes: PANEL_STATES.hovered.attributes
     });
+
+    // "idle" state: when the panel is not interacted with.
+    // Use onUnset to trigger the releasedAction when the panel leaves the "selected" state.
     container.setupState({
-      state: 'idle',
-      attributes: PANEL_STATES.idle.attributes
+        state: 'idle',
+        attributes: PANEL_STATES.idle.attributes,
+        onSet: releasedAction.bind(container)  // Triggered when the panel exits a non-idle state.
     });
-  
-    // Set initial position and a slight rotation.
+
+    // Set the container's position and a slight rotation for visual effect.
     container.position.set(x, y, z);
     container.rotation.x = PANEL_CONFIG.rotationX;
-  
-    // --- Drag Logic Implementation ---
-  
-    // Use the container's userData to store drag-related state.
-    container.userData.isDragging = false;
-    container.userData.dragData = {};
-  
-    // Define the pointermove and pointerup handlers so they can be removed later.
-    const onPointerMove = (event) => {
-      if (!container.userData.isDragging) return;
-  
-      // Calculate pointer movement delta.
-      const deltaX = event.clientX - container.userData.dragData.startX;
-      const deltaY = event.clientY - container.userData.dragData.startY;
-  
-      // Conversion factor: adjust based on your scene's scale.
-      const conversionFactor = 0.01;
-      container.position.x =
-        container.userData.dragData.startPos.x + deltaX * conversionFactor;
-      container.position.y =
-        container.userData.dragData.startPos.y - deltaY * conversionFactor;
-    };
-  
-    const onPointerUp = (event) => {
-      if (!container.userData.isDragging) return;
-  
-      // End dragging.
-      container.userData.isDragging = false;
-      container.setState('idle');
-  
-      // Remove the global event listeners.
-      window.removeEventListener('pointermove', onPointerMove);
-      window.removeEventListener('pointerup', onPointerUp);
-    };
-  
-    // On pointerdown on the container, start dragging.
-    container.addEventListener('pointerdown', (event) => {
-      // Prevent further propagation if needed.
-      event.stopPropagation();
-  
-      container.userData.isDragging = true;
-      // Store the initial pointer coordinates.
-      container.userData.dragData.startX = event.clientX;
-      container.userData.dragData.startY = event.clientY;
-      // Store the panel's starting position.
-      container.userData.dragData.startPos = container.position.clone();
-  
-      // Switch to the "selected" state for visual feedback.
-      container.setState('selected');
-  
-      // Add global event listeners so dragging continues even if the pointer
-      // moves outside the panel.
-      window.addEventListener('pointermove', onPointerMove);
-      window.addEventListener('pointerup', onPointerUp);
-    });
-  
+
     return container;
 }
 

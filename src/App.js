@@ -21,6 +21,9 @@ const objsToTest = [];
 
 let camera, scene, video, renderer, vrControl;
 
+// Global variable to track the currently active controller.
+let activeController = null;
+
 // =======================
 // Event Listeners
 // =======================
@@ -81,6 +84,60 @@ function exitSession() {
     }, 200);
 }
 
+// -------------------------
+// UI Panel Drag Callbacks
+// -------------------------
+
+/**
+ * Called when the panel enters the "hold" state.
+ * Stores the starting pointer (mouse or controller) and panel position.
+ *
+ * When in XR mode (renderer.xr.isPresenting), the active controller’s pointer
+ * world position is used; otherwise, the mouse coordinates are used.
+ */
+function panelHold(event) {
+    // Ensure userData exists.
+    if (!this.userData) {
+        this.userData = {};
+    }
+    // Ensure the object has a position.
+    if (!this.position) {
+        this.position = new THREE.Vector3();
+    }
+    // Only start dragging if not already dragging.
+    if (!this.userData.isDragging) {
+        this.userData.isDragging = true;
+        // Check if we're in XR mode and have an active controller.
+        if (renderer.xr.isPresenting && activeController) {
+            this.userData.dragData = {
+                // Record the controller pointer's world position.
+                startPointer: activeController.point.position.clone(),
+                startPos: this.position.clone(),
+                isXR: true
+            };
+        } else {
+            // Otherwise, use mouse coordinates.
+            this.userData.dragData = {
+                startPointer: { x: mouse.x, y: mouse.y },
+                startPos: this.position.clone(),
+                isXR: false
+            };
+        }
+    }
+}
+
+/**
+ * Called when the panel exits the "hold" state.
+ * Ends the dragging process.
+ */
+  
+function panelReleased() {
+    if (!this.userData) {
+        this.userData = {};
+    }
+    this.userData.isDragging = false;
+}
+
 /**
  * Update camera aspect and renderer size on window resize.
  */
@@ -95,7 +152,7 @@ function onWindowResize() {
  */
 function makePanel() {
     // Container block for the UI panel
-    const container = UI.makeUIPanel(0, 0, -2);
+    const container = UI.makeUIPanel(0, 0, -2, panelHold, panelReleased);
 
     // Create buttons with their respective callback actions
     const buttonNext = UI.makeButton("Exit", exitSession);
@@ -132,29 +189,30 @@ function raycast(raycaster) {
 
 /**
  * Update UI buttons state based on pointer or controller interactions.
+ * Also update position for any UI element that is being dragged.
  */
 function updateButtons() {
     let intersect;
 
     if (renderer.xr.isPresenting) {
-        // Use VR controllers if in XR mode
+        // Use VR controllers if in XR mode.
         const controllers = vrControl.controllers;
         controllers.forEach((_, index) => {
             vrControl.setFromController(index, raycaster.ray);
             intersect = raycast(raycaster);
 
-            // Position the pointer at the intersection point if any
+            // Position the pointer at the intersection point if any.
             if (intersect) {
                 vrControl.setPointerAt(index, intersect.point);
             }
         });
     } else if (mouse.x !== null && mouse.y !== null) {
-        // Use mouse coordinates for desktop mode
+        // Use mouse coordinates for desktop mode.
         raycaster.setFromCamera(mouse, camera);
         intersect = raycast(raycaster);
     }
 
-    // Update state of the intersected UI element
+    // Update state of the intersected UI element.
     if (intersect && intersect.object.isUI) {
         if (selectState) {
             intersect.object.setState('selected');
@@ -163,10 +221,29 @@ function updateButtons() {
         }
     }
 
-    // Reset state for non-targeted UI elements
+    // Reset state for non-targeted UI elements.
     objsToTest.forEach((obj) => {
         if ((!intersect || obj !== intersect.object) && obj.isUI) {
             obj.setState('idle');
+        }
+    });
+
+    // Update dragging: for objects marked as being dragged.
+    objsToTest.forEach((obj) => {
+        if (obj.userData && obj.userData.isDragging && obj.userData.dragData) {
+            if (renderer.xr.isPresenting && obj.userData.dragData.isXR && activeController) {
+                // Use the controller pointer's world position.
+                const currentPointer = activeController.point.position.clone();
+                const delta = new THREE.Vector3().subVectors(currentPointer, obj.userData.dragData.startPointer);
+                obj.position.copy(obj.userData.dragData.startPos.clone().add(delta));
+            } else {
+                // Use mouse coordinates.
+                const conversionFactor = 0.5; // Adjust as needed for your scene scale.
+                const deltaX = mouse.x - obj.userData.dragData.startPointer.x;
+                const deltaY = mouse.y - obj.userData.dragData.startPointer.y;
+                obj.position.x = obj.userData.dragData.startPos.x + deltaX * conversionFactor;
+                obj.position.y = obj.userData.dragData.startPos.y + deltaY * conversionFactor;
+            }
         }
     });
 }
@@ -226,14 +303,27 @@ function init() {
     // Set up VR controllers
     vrControl = VRControl(renderer, camera, scene);
     // Controller event listeners for select start/end
+    // vrControl.controllers.forEach((controller) => {
+    //     controller.addEventListener('selectstart', () => {
+    //         selectState = true;
+    //     });
+    //     controller.addEventListener('selectend', () => {
+    //         selectState = false;
+    //     });
+    // });
+    
+    // In your controller event listeners:
     vrControl.controllers.forEach((controller) => {
         controller.addEventListener('selectstart', () => {
             selectState = true;
+            activeController = controller;  // Set the active controller.
         });
         controller.addEventListener('selectend', () => {
             selectState = false;
+            activeController = null;        // Clear the active controller.
         });
     });
+    
     scene.add(vrControl.controllerGrips[0], vrControl.controllers[0]);
     scene.add(vrControl.controllerGrips[1], vrControl.controllers[1]);
 
