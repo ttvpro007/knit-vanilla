@@ -142,8 +142,12 @@ const PANEL_CONFIG = {
     padding: 0.05,
     borderRadius: 0.11,
     justifyContent: 'center',
-    contentDirection: 'row-reverse',
-    rotationX: -0.55
+    flexDirection: 'column',
+    alignItems: 'center',
+    contentDirection: 'column-reverse',
+    gap: 0.05,
+    backgroundOpacity: 0.1,
+    rotationX: -0.55,
 };
 
 // Button Base Options
@@ -231,13 +235,17 @@ const PANEL_STATES = {
 export function makeUIPanel(x, y, z, holdAction, releasedAction) {
     // Create the container block with auto-fit dimensions using PANEL_CONFIG settings
     const container = new ThreeMeshUI.Block({
-        justifyContent: PANEL_CONFIG.justifyContent,
-        contentDirection: PANEL_CONFIG.contentDirection,
         fontFamily: PANEL_CONFIG.fontFamily,
         fontTexture: PANEL_CONFIG.fontTexture,
         fontSize: PANEL_CONFIG.fontSize,
         padding: PANEL_CONFIG.padding,
-        borderRadius: PANEL_CONFIG.borderRadius
+        borderRadius: PANEL_CONFIG.borderRadius,
+        justifyContent: PANEL_CONFIG.justifyContent,
+        flexDirection: PANEL_CONFIG.flexDirection,
+        alignItems: PANEL_CONFIG.alignItems,
+        contentDirection: PANEL_CONFIG.contentDirection,
+        gap: PANEL_CONFIG.gap,
+        backgroundOpacity: PANEL_CONFIG.backgroundOpacity
     });
 
     // Setup the interactive states:

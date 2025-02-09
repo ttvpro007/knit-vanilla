@@ -187,17 +187,21 @@ export function makeUIPanel(x, y, z) {
 	// Note that we set contentDirection: "row-reverse", in order to orient the buttons horizontally
 
 	const container = new ThreeMeshUI.Block( {
+        flexDirection: 'column',
 		justifyContent: 'center',
-		contentDirection: 'row-reverse',
+        alignItems: 'center',
+        contentDirection: 'column',
 		fontFamily: FontJSON,
 		fontTexture: FontImage,
 		fontSize: 0.07,
-		padding: 0.02,
-		borderRadius: 0.11
+		borderRadius: 0.01,
+        padding: 0.2,
+        gap: 0.05,
+        backgroundOpacity: 0.1
 	} );
 
 	container.position.set( x, y, z );
-	container.rotation.x = -0.55;
+	container.rotation.x = -0;
     return container;
 }
 
@@ -240,6 +244,16 @@ export function makeButton(label, action)
         },
     };
 
+    const selectedAttributes = {
+        state: 'selected',
+        attributes: {
+            offset: 0.02,
+            backgroundColor: new THREE.Color( 0x777777 ),
+            fontColor: new THREE.Color( 0x222222 ),
+            onSet: action
+        }
+    };
+
     // Buttons creation, with the options objects passed in parameters.
 
     const button = new ThreeMeshUI.Block( buttonOptions );
@@ -253,17 +267,19 @@ export function makeButton(label, action)
     // Create states for the buttons.
     // In the loop, we will call component.setState( 'state-name' ) when mouse hover or click
 
-    const selectedAttributes = {
-        offset: 0.02,
-        backgroundColor: new THREE.Color( 0x777777 ),
-        fontColor: new THREE.Color( 0x222222 )
-    };
+    // const selectedAttributes = {
+    //     offset: 0.02,
+    //     backgroundColor: new THREE.Color( 0x777777 ),
+    //     fontColor: new THREE.Color( 0x222222 )
+    // };
 
-    button.setupState( {
-        state: 'selected',
-        attributes: selectedAttributes,
-        onSet: action
-    } );
+    // button.setupState( {
+    //     state: 'selected',
+    //     attributes: selectedAttributes,
+    //     onSet: action
+    // } );
+
+    button.setupState( selectedAttributes );
     button.setupState( hoveredStateAttributes );
     button.setupState( idleStateAttributes );
 
