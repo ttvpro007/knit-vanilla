@@ -254,7 +254,7 @@ export function makeUIPanel(x, y, z, holdAction, releasedAction) {
     container.setupState({
         state: 'selected',
         attributes: PANEL_STATES.selected.attributes,
-        onSet: holdAction.bind(container)  // Triggered when the panel enters the "selected" state.
+        onSet: holdAction?.bind(container)  // Triggered when the panel enters the "selected" state.
     });
 
     // "hovered" state: when the pointer is over the panel.
@@ -268,7 +268,7 @@ export function makeUIPanel(x, y, z, holdAction, releasedAction) {
     container.setupState({
         state: 'idle',
         attributes: PANEL_STATES.idle.attributes,
-        onSet: releasedAction.bind(container)  // Triggered when the panel exits a non-idle state.
+        onSet: releasedAction?.bind(container)  // Triggered when the panel exits a non-idle state.
     });
 
     // Set the container's position and a slight rotation for visual effect.
